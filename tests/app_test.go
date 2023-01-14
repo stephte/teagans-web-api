@@ -16,4 +16,4 @@ func TestThatIndexPageWorks2(t *testing.T) {
 
 	testHelper.AssertStatus(res, 200)
 	testHelper.Assert(string(body) == "Welcome to Teagan's chi app!", "")
-} 
+}

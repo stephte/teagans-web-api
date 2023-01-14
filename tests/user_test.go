@@ -11,8 +11,6 @@ import (
 
 // ----- User Index -----
 
-// TODO: add PaginationDTO context
-
 func TestThatUserIndexRequiresAuth(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
@@ -32,6 +30,7 @@ func TestThatUserIndexRequiresAdminAuth(t *testing.T) {
 	res := helper.SendAsRegularUser("get", "/users", nil)
 
 	helper.AssertStatus(res, 401)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
@@ -63,7 +62,9 @@ func TestUserFindDoesntWorkForOtherUser(t *testing.T) {
 	defer helper.CleanupAuth()
 
 	res := helper.SendAsRegularUser("get", fmt.Sprintf("/users/%s", helper.AdminUser.Key), nil)
+
 	helper.AssertStatus(res, 401)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
@@ -133,6 +134,7 @@ func TestInvalidUserCreate(t *testing.T) {
 	res := helper.SendAsNoOne("post", "/users", reqData)
 
 	helper.AssertStatus(res, 400)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
@@ -187,6 +189,7 @@ func  TestUserCreateInvalidEmail(t *testing.T) {
 	res := helper.SendAsNoOne("post", "/users", reqData)
 
 	helper.AssertStatus(res, 400)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
@@ -209,10 +212,11 @@ func  TestUserCreateInvalidPassword(t *testing.T) {
 	res := helper.SendAsNoOne("post", "/users", reqData)
 
 	helper.AssertStatus(res, 400)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
-// // ----- User update (PATCH) -----
+// ----- User update (PATCH) -----
 
 func  TestUserUpdateWorksForUser(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
@@ -253,7 +257,9 @@ func  TestUserUpdateFailsForOtherUser(t *testing.T) {
 	}
 
 	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.AdminUser.Key), reqData)
+
 	helper.AssertStatus(res, 401)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
@@ -323,7 +329,9 @@ func  TestAdminCanNotUpdateRole(t *testing.T) {
 	}
 
 	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+
 	helper.AssertStatus(res, 401)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
@@ -342,11 +350,13 @@ func  TestUserUpdateInvalidEmail(t *testing.T) {
 	}
 
 	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+
 	helper.AssertStatus(res, 400)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
-// // ----- User update OG (PUT) -----
+// ----- User update OG (PUT) -----
 
 func  TestUserUpdateOGWorksForUser(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
@@ -396,7 +406,9 @@ func  TestUserUpdateOGFailsForOtherUser(t *testing.T) {
 	}
 
 	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.AdminUser.Key), reqData)
+
 	helper.AssertStatus(res, 401)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
@@ -478,7 +490,9 @@ func  TestUserUpdateOGInvalidEmail(t *testing.T) {
 	}
 
 	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+
 	helper.AssertStatus(res, 400)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
@@ -500,11 +514,13 @@ func  TestAdminCanNotUpdateRoleWithOG(t *testing.T) {
 	}
 
 	res := helper.SendAsAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+
 	helper.AssertStatus(res, 401)
+	helper.ValidateErrDTOPresent(res)
 }
 
 
-// // ----- User delete -----
+// ----- User delete -----
 
 func TestDeleteWorksForCurrentUser(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
@@ -521,7 +537,9 @@ func TestDeleteDoesNotWorksForOtherUser(t *testing.T) {
 	defer helper.CleanupAuth()
 
 	res := helper.SendAsRegularUser("delete", fmt.Sprintf("/users/%s", helper.AdminUser.Key), nil)
+
 	helper.AssertStatus(res, 401)
+	helper.ValidateErrDTOPresent(res)
 }
 
 func TestDeleteWorksForSuperUser(t *testing.T) {

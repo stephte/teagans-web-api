@@ -60,22 +60,5 @@ func TestInvalidLogin(t *testing.T) {
 	res := testHelper.SendAsNoOne("post", "/auth/login", regularData)
 
 	testHelper.AssertStatus(res, 401)
-	
-	data := testHelper.GetResponseBody(res)
-
-	var errDTO dtos.ErrorDTO
-	jsonErr = json.Unmarshal(data, &errDTO)
-	if jsonErr != nil {
-		t.Errorf("expected error to be nil got %v", jsonErr)
-	}
-
-	testHelper.Assert(errDTO.Exists(), "Invalid login should return an ErrorDTO")
-
-	var tokenDTO dtos.LoginTokenDTO
-	jsonErr = json.Unmarshal(data, &tokenDTO)
-	if jsonErr != nil {
-		t.Errorf("expected error to be nil got %v", jsonErr)
-	}
-
-	testHelper.Assert(tokenDTO.Token == "", "Token should not be returned if login failed")
+	testHelper.ValidateErrDTOPresent(res)
 }

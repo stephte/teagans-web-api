@@ -18,8 +18,8 @@ type DBConn struct {
 	port				int
 
 	db					*gorm.DB
-
 	logger			zerolog.Logger
+
 	verbose			bool
 }
 

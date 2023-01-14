@@ -10,12 +10,10 @@ import (
 	"testing"
 	"strconv"
 	"errors"
-	// "bytes"
 	"fmt"
 	"os"
 )
 
-// type Controller func(http.ResponseWriter, *http.Request)
 
 type TestHelper struct {
 	RegularUser				models.User

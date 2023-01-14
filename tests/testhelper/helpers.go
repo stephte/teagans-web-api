@@ -1,7 +1,9 @@
 package testhelper
 
 import (
+	"chi-users-project/app/services/dtos"
 	"net/http/httptest"
+	"encoding/json"
 	"path/filepath"
 	"io/ioutil"
 	"net/http"
@@ -26,11 +28,14 @@ func(this TestHelper) GetResponseBody(res *http.Response) []byte {
 }
 
 
-func getRequest(typ string, url string, buf *bytes.Buffer) (*httptest.ResponseRecorder, *http.Request) {
-	r := httptest.NewRequest(typ, url, buf)
-	w := httptest.NewRecorder()
+func(this TestHelper) ValidateErrDTOPresent(res *http.Response) {
+	errDTO := dtos.ErrorDTO{}
+	jsonErr := json.Unmarshal(this.GetResponseBody(res), &errDTO)
+	if jsonErr != nil {
+		this.t.Fatal(jsonErr.Error())
+	}
 
-	return w, r
+	this.assert_it(errDTO.Exists(), "ErrorDTO response expected", 2)
 }
 
 
