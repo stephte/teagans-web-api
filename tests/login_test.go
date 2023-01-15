@@ -60,5 +60,5 @@ func TestInvalidLogin(t *testing.T) {
 	res := testHelper.SendAsNoOne("post", "/auth/login", regularData)
 
 	testHelper.AssertStatus(res, 401)
-	testHelper.ValidateErrDTOPresent(res)
+	testHelper.AssertErrDTOPresent(res)
 }

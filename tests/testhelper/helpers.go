@@ -28,17 +28,6 @@ func(this TestHelper) GetResponseBody(res *http.Response) []byte {
 }
 
 
-func(this TestHelper) ValidateErrDTOPresent(res *http.Response) {
-	errDTO := dtos.ErrorDTO{}
-	jsonErr := json.Unmarshal(this.GetResponseBody(res), &errDTO)
-	if jsonErr != nil {
-		this.t.Fatal(jsonErr.Error())
-	}
-
-	this.assert_it(errDTO.Exists(), "ErrorDTO response expected", 2)
-}
-
-
 // Assertions
 
 func(this TestHelper) Assert(value bool, msg string) {
@@ -48,6 +37,17 @@ func(this TestHelper) Assert(value bool, msg string) {
 
 func(this TestHelper) AssertStatus(res *http.Response, expected int) {
 	this.assert_it(res.StatusCode == expected, fmt.Sprintf("Expected status: %d; actual status: %d", expected, res.StatusCode), 2)
+}
+
+
+func(this TestHelper) AssertErrDTOPresent(res *http.Response) {
+	errDTO := dtos.ErrorDTO{}
+	jsonErr := json.Unmarshal(this.GetResponseBody(res), &errDTO)
+	if jsonErr != nil {
+		this.t.Fatal(jsonErr.Error())
+	}
+
+	this.assert_it(errDTO.Exists(), "ErrorDTO response expected", 2)
 }
 
 

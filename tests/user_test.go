@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"chi-users-project/app/services/dtos"
 	"chi-users-project/tests/testhelper"
 	"encoding/json"
 	"testing"
@@ -30,7 +29,7 @@ func TestThatUserIndexRequiresAdminAuth(t *testing.T) {
 	res := helper.SendAsRegularUser("get", "/users", nil)
 
 	helper.AssertStatus(res, 401)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
@@ -64,7 +63,7 @@ func TestUserFindDoesntWorkForOtherUser(t *testing.T) {
 	res := helper.SendAsRegularUser("get", fmt.Sprintf("/users/%s", helper.AdminUser.Key), nil)
 
 	helper.AssertStatus(res, 401)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
@@ -103,8 +102,11 @@ func TestUserCreate(t *testing.T) {
 
 	helper.AssertStatus(res, 200)
 
-	var body dtos.UserDTO
-	jsonErr = json.Unmarshal(helper.GetResponseBody(res), &body)
+	body := helper.GetUserDTO(res)
+	helper.Assert(body.FirstName == "Testy", "Firstname value incorrect")
+	helper.Assert(body.LastName == "McTest", "Lastname value incorrect")
+	helper.Assert(body.Email == "testymctest@test.com", "Email incorrect")
+	helper.Assert(body.Role == 1, "Role incorrect")
 
 	// get key from ResponseBody
 	key := body.Key
@@ -134,7 +136,7 @@ func TestInvalidUserCreate(t *testing.T) {
 	res := helper.SendAsNoOne("post", "/users", reqData)
 
 	helper.AssertStatus(res, 400)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
@@ -159,8 +161,11 @@ func TestValidAdminUserCreate(t *testing.T) {
 
 	helper.AssertStatus(res, 200)
 
-	body := dtos.UserDTO{}
-	jsonErr = json.Unmarshal(helper.GetResponseBody(res), &body)
+	body := helper.GetUserDTO(res)
+	helper.Assert(body.FirstName == "Testy", "Firstname value incorrect")
+	helper.Assert(body.LastName == "McTest", "Lastname value incorrect")
+	helper.Assert(body.Email == "testymctest@test.com", "Email incorrect")
+	helper.Assert(body.Role == 2, "Role incorrect")
 
 	// get key from ResponseBody
 	key := body.Key
@@ -189,7 +194,7 @@ func  TestUserCreateInvalidEmail(t *testing.T) {
 	res := helper.SendAsNoOne("post", "/users", reqData)
 
 	helper.AssertStatus(res, 400)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
@@ -212,7 +217,7 @@ func  TestUserCreateInvalidPassword(t *testing.T) {
 	res := helper.SendAsNoOne("post", "/users", reqData)
 
 	helper.AssertStatus(res, 400)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
@@ -235,8 +240,11 @@ func  TestUserUpdateWorksForUser(t *testing.T) {
 	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := dtos.UserDTO{}
-	jsonErr = json.Unmarshal(helper.GetResponseBody(res), &body)
+	body := helper.GetUserDTO(res)
+	helper.Assert(body.FirstName == "Testie", "Firstname should be updated")
+	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should be the same")
+	helper.Assert(body.Email == helper.RegularUser.Email, "Email should stay the same")
+	helper.Assert(body.Role == helper.RegularUser.Role, "Role should stay the same")
 
 	helper.Assert(body.FirstName == "Testie", "Firstname should be updated")
 }
@@ -259,7 +267,7 @@ func  TestUserUpdateFailsForOtherUser(t *testing.T) {
 	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.AdminUser.Key), reqData)
 
 	helper.AssertStatus(res, 401)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
@@ -269,7 +277,7 @@ func  TestUserUpdateWorksForSuperAdmin(t *testing.T) {
 	defer helper.CleanupAuth()
 
 	data := map[string]interface{}{
-		"firstName": "Test",
+		"lastName": "Test",
 	}
 
 	reqData, jsonErr := json.Marshal(data)
@@ -280,10 +288,11 @@ func  TestUserUpdateWorksForSuperAdmin(t *testing.T) {
 	res := helper.SendAsSuperAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := dtos.UserDTO{}
-	jsonErr = json.Unmarshal(helper.GetResponseBody(res), &body)
-
-	helper.Assert(body.FirstName == "Test", "Firstname should be updated")
+	body := helper.GetUserDTO(res)
+	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should stay the same")
+	helper.Assert(body.LastName == "Test", "Lastname should be updated")
+	helper.Assert(body.Email == helper.RegularUser.Email, "Email should stay the same")
+	helper.Assert(body.Role == helper.RegularUser.Role, "Role should stay the same")
 }
 
 
@@ -293,7 +302,7 @@ func  TestSuperAdminCanUpdateRole(t *testing.T) {
 	defer helper.CleanupAuth()
 
 	data := map[string]interface{}{
-		"firstName": "Test",
+		"email": "TEST@test.test",
 		"role": 2,
 	}
 
@@ -305,11 +314,11 @@ func  TestSuperAdminCanUpdateRole(t *testing.T) {
 	res := helper.SendAsSuperAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := dtos.UserDTO{}
-	jsonErr = json.Unmarshal(helper.GetResponseBody(res), &body)
-
-	helper.Assert(body.FirstName == "Test", "Firstname should be updated")
+	body := helper.GetUserDTO(res)
+	helper.Assert(body.Email == "test@test.test", "Email should be updated and should be lowercase")
 	helper.Assert(body.Role == 2, "Role should be updated")
+	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should stay the same")
+	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should stay the same")
 }
 
 
@@ -331,11 +340,11 @@ func  TestAdminCanNotUpdateRole(t *testing.T) {
 	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 
 	helper.AssertStatus(res, 401)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
-func  TestUserUpdateInvalidEmail(t *testing.T) {
+func TestUserUpdateInvalidEmail(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
 	defer helper.CleanupAuth()
@@ -352,13 +361,13 @@ func  TestUserUpdateInvalidEmail(t *testing.T) {
 	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 
 	helper.AssertStatus(res, 400)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
 // ----- User update OG (PUT) -----
 
-func  TestUserUpdateOGWorksForUser(t *testing.T) {
+func TestUserUpdateOGWorksForUser(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
 	defer helper.CleanupAuth()
@@ -378,9 +387,7 @@ func  TestUserUpdateOGWorksForUser(t *testing.T) {
 	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := dtos.UserDTO{}
-	jsonErr = json.Unmarshal(helper.GetResponseBody(res), &body)
-
+	body := helper.GetUserDTO(res)
 	helper.Assert(body.FirstName == "Testie", "Firstname should be updated")
 	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should be the same")
 	helper.Assert(body.Email == helper.RegularUser.Email, "Email should be the same")
@@ -388,7 +395,7 @@ func  TestUserUpdateOGWorksForUser(t *testing.T) {
 }
 
 
-func  TestUserUpdateOGFailsForOtherUser(t *testing.T) {
+func TestUserUpdateOGFailsForOtherUser(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
 	defer helper.CleanupAuth()
@@ -408,11 +415,11 @@ func  TestUserUpdateOGFailsForOtherUser(t *testing.T) {
 	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.AdminUser.Key), reqData)
 
 	helper.AssertStatus(res, 401)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
-func  TestUserUpdateOGWorksForSuperAdmin(t *testing.T) {
+func TestUserUpdateOGWorksForSuperAdmin(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
 	defer helper.CleanupAuth()
@@ -432,9 +439,7 @@ func  TestUserUpdateOGWorksForSuperAdmin(t *testing.T) {
 	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := dtos.UserDTO{}
-	jsonErr = json.Unmarshal(helper.GetResponseBody(res), &body)
-
+	body := helper.GetUserDTO(res)
 	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should be the same")
 	helper.Assert(body.LastName == "Test", "Lastname should be updated")
 	helper.Assert(body.Email == helper.RegularUser.Email, "Lastname should be the same")
@@ -442,7 +447,7 @@ func  TestUserUpdateOGWorksForSuperAdmin(t *testing.T) {
 }
 
 
-func  TestSuperAdminCanUpdateRoleWithOG(t *testing.T) {
+func TestSuperAdminCanUpdateRoleWithOG(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
 	defer helper.CleanupAuth()
@@ -462,9 +467,7 @@ func  TestSuperAdminCanUpdateRoleWithOG(t *testing.T) {
 	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := dtos.UserDTO{}
-	jsonErr = json.Unmarshal(helper.GetResponseBody(res), &body)
-
+	body := helper.GetUserDTO(res)
 	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should be the same")
 	helper.Assert(body.Role == 2, "Role should be updated")
 	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should be the same")
@@ -472,7 +475,7 @@ func  TestSuperAdminCanUpdateRoleWithOG(t *testing.T) {
 }
 
 
-func  TestUserUpdateOGInvalidEmail(t *testing.T) {
+func TestUserUpdateOGInvalidEmail(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
 	defer helper.CleanupAuth()
@@ -492,11 +495,11 @@ func  TestUserUpdateOGInvalidEmail(t *testing.T) {
 	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 
 	helper.AssertStatus(res, 400)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
-func  TestAdminCanNotUpdateRoleWithOG(t *testing.T) {
+func TestAdminCanNotUpdateRoleWithOG(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
 	defer helper.CleanupAuth()
@@ -516,7 +519,7 @@ func  TestAdminCanNotUpdateRoleWithOG(t *testing.T) {
 	res := helper.SendAsAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
 
 	helper.AssertStatus(res, 401)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
 
 
@@ -531,6 +534,7 @@ func TestDeleteWorksForCurrentUser(t *testing.T) {
 	helper.AssertStatus(res, 200)
 }
 
+
 func TestDeleteDoesNotWorksForOtherUser(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
@@ -539,8 +543,9 @@ func TestDeleteDoesNotWorksForOtherUser(t *testing.T) {
 	res := helper.SendAsRegularUser("delete", fmt.Sprintf("/users/%s", helper.AdminUser.Key), nil)
 
 	helper.AssertStatus(res, 401)
-	helper.ValidateErrDTOPresent(res)
+	helper.AssertErrDTOPresent(res)
 }
+
 
 func TestDeleteWorksForSuperUser(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
