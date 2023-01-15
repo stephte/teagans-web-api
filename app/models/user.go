@@ -20,7 +20,7 @@ type User struct {
 	PasswordResetExpiration		int64
 	Password									string		`gorm:"-"`
 	EncryptedPassword					[]byte		`gorm:"not null"`
-	PasswordLastUpdated				int64			// Probs dont need this
+	PasswordLastUpdated				int64
 }
 
 
