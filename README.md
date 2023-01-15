@@ -2,11 +2,9 @@
 
 # Setup
 
-requires go 1.18
+- requires go 1.18 and a running postgres server
 
-and a running postgres server
-
-fill in .env/dev.env template with appropriate data
+- rename .env/dev_template.env to ./env/dev.env, and fill in template values with appropriate data
 
 then run command:
 
