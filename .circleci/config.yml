@@ -36,6 +36,10 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run:
+          command: |
+            mkdir .env/
+            touch .env/test.env
+      - run:
           name: Run tests
           command: |
             cd ./tests/
