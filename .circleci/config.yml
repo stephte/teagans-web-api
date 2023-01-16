@@ -41,6 +41,7 @@ jobs:
       - run:
           name: Run tests
           command: |
+            cd tests/
             go test -v
       - store_test_results:
           path: /tmp/test-reports
