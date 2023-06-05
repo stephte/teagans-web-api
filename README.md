@@ -6,10 +6,6 @@
 
 - copy .env/dev_template.env into ./env/dev.env, and fill in template values with appropriate data
 
-then run command:
-
-    go install
-
 # Run App:
 
     go run app/app.go
