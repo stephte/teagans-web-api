@@ -46,7 +46,7 @@ func(this *Router) defineRoutes() {
 		r.With(middle.ValidateJWT).With(middle.GetPaginationDTO).Get("/", controllers.UsersIndex)
 		r.With(middle.ValidateOptionalJWT).Post("/", controllers.CreateUser)
 
-		r.Route("/{userKey}", func(r chi.Router) {
+		r.Route("/{userId}", func(r chi.Router) {
 			r.Use(middle.ValidateJWT)
 
 			r.Get("/", controllers.FindUser)

@@ -10,16 +10,16 @@ import (
 )
 
 type EmailRequest interface {
-	GenerateAndSetMessage() error
-	CheckReadyToExecute() error
+	GenerateAndSetMessage()		error
+	CheckReadyToExecute()		error
 }
 
 type BaseEmailRequest struct {
-	toEmails			[]string
-	from					string
-	cc						[]string
-	subject				string
-	message				[]byte
+	toEmails		[]string
+	from			string
+	cc				[]string
+	subject			string
+	message			[]byte
 }
 
 

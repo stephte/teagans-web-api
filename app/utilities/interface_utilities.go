@@ -2,6 +2,7 @@ package utilities
 
 import(
 	"reflect"
+	"strings"
 	"errors"
 	"fmt"
 )
@@ -17,7 +18,7 @@ func CheckKeyValue(strct interface{}, mapKey string, mapValType string) (bool, e
 		typ := field.Type().String()
 
 		if name == mapKey {
-			if typ == mapValType {
+			if typ == mapValType || (IsNumberType(mapValType) && IsNumberType(typ)) {
 				return true, nil
 			} else {
 				errStr := fmt.Sprintf("%s is of incorrect data type; is %s, should be %s", name, mapValType, typ)
@@ -29,14 +30,17 @@ func CheckKeyValue(strct interface{}, mapKey string, mapValType string) (bool, e
 	return false, nil
 }
 
+
 // returns value type as string
 func GetType(value interface{}) string {
-	typ := fmt.Sprintf("%T", value)
+	return fmt.Sprintf("%T", value)
+}
 
-	floatValue, ok := value.(float64)
-	if ok && floatValue == float64(int(floatValue)) {
-		typ = "int"
+
+func IsNumberType(typStr string) bool {
+	if strings.Contains(strings.ToLower(typStr), "float") || strings.Contains(strings.ToLower(typStr), "int") {
+		return true
 	}
 
-	return typ
+	return false
 }

@@ -11,13 +11,13 @@ import (
 // -------- DB Setup --------
 
 type DBConn struct {
-	host				string
-	user				string
+	host			string
+	user			string
 	password		string
-	name				string
-	port				int
+	name			string
+	port			int
 
-	db					*gorm.DB
+	db				*gorm.DB
 	logger			zerolog.Logger
 
 	verbose			bool
@@ -85,7 +85,7 @@ func(this DBConn) CoolDown() error {
 func(this *DBConn) migrate() {
 
 	// this.logger.Warn().Msg("Dropping Users table")
-	// db.Migrator().DropTable(&models.User{})
+	// this.db.Migrator().DropTable(&models.User{})
 
 	if this.verbose {
 		this.logger.Info().Msg("Migrating...")

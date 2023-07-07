@@ -1,11 +1,14 @@
 package models
 
 import (
-	"github.com/google/uuid"
+	"chi-users-project/app/utilities/uuid"
 	"gorm.io/gorm"
+	"time"
 )
 
 type BaseModel struct {
-	gorm.Model
-	Key						uuid.UUID	`gorm:"type:uuid;uniqueIndex;not null;default:uuid_generate_v4()"`
+	ID			uuid.UUID		`gorm:"type:uuid;primaryKey;default:uuid_generate_v4()"`
+	CreatedAt	time.Time
+	UpdatedAt	time.Time
+	DeletedAt	gorm.DeletedAt	`gorm:"index"`
 }

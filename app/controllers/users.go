@@ -30,12 +30,12 @@ func UsersIndex(w http.ResponseWriter, r *http.Request) {
 
 
 func FindUser(w http.ResponseWriter, r *http.Request) {
-	userKeyStr := chi.URLParam(r, "userKey")
+	userIdStr := chi.URLParam(r, "userId")
 
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.UserService{BaseService: baseService}
 
-	userDTO, errDTO := service.GetUser(userKeyStr)
+	userDTO, errDTO := service.GetUser(userIdStr)
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
 		return
@@ -72,7 +72,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 // but keeps it as a map so that only the included data is updated
 // (GORM only updates non-zero fields when updating with struct)
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
-	userKeyStr := chi.URLParam(r, "userKey")
+	userIdStr := chi.URLParam(r, "userId")
 
 	var data map[string]interface{}
 	bindErr := json.NewDecoder(r.Body).Decode(&data)
@@ -84,7 +84,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.UserService{BaseService: baseService}
 
-	userDTO, errDTO := service.UpdateUser(userKeyStr, data)
+	userDTO, errDTO := service.UpdateUser(userIdStr, data)
 
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
@@ -97,7 +97,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 // PUT version of User update (expects all user data) (prefer above PATCH version)
 func UpdateUserOG(w http.ResponseWriter, r *http.Request) {
-	userKeyStr := chi.URLParam(r, "userKey")
+	userIdStr := chi.URLParam(r, "userId")
 
 	var dto dtos.UserDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
@@ -109,7 +109,7 @@ func UpdateUserOG(w http.ResponseWriter, r *http.Request) {
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.UserService{BaseService: baseService}
 
-	userDTO, errDTO := service.UpdateUserOG(userKeyStr, dto)
+	userDTO, errDTO := service.UpdateUserOG(userIdStr, dto)
 
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
@@ -121,12 +121,12 @@ func UpdateUserOG(w http.ResponseWriter, r *http.Request) {
 
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-	userKeyStr := chi.URLParam(r, "userKey")
+	userIdStr := chi.URLParam(r, "userId")
 
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.UserService{BaseService: baseService}
 
-	errDTO := service.DeleteUser(userKeyStr)
+	errDTO := service.DeleteUser(userIdStr)
 
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)

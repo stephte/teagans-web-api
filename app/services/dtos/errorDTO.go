@@ -1,9 +1,9 @@
 package dtos
 
 type ErrorDTO struct {
-	Err 			string		`json:"error"`
-	Status		int				`json:"-"`
-	Relogin		bool			`json:"relogin"` // tells the UI to re-authenticate
+	Err 		string		`json:"error"`
+	Status		int			`json:"-"`
+	Relogin		bool		`json:"relogin"` // tells the UI to re-authenticate
 }
 
 

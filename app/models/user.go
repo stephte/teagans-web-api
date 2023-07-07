@@ -1,6 +1,7 @@
 package models
 
 import (
+	"chi-users-project/app/utilities/enums"
 	"chi-users-project/app/utilities/auth"
 	"chi-users-project/app/utilities"
 	"gorm.io/gorm"
@@ -12,15 +13,15 @@ import (
 
 type User struct {
 	BaseModel
-	FirstName									string		`gorm:"not null"`
-	LastName									string		`gorm:"not null"`
-	Email											string		`gorm:"uniqueIndex;not null"`
-	Role											int				`gorm:"default:0"`
-	PasswordResetToken				[]byte
+	FirstName					string				`gorm:"not null"`
+	LastName					string				`gorm:"not null"`
+	Email						string				`gorm:"uniqueIndex;not null"`
+	Role						enums.UserRole		`gorm:"default:0"`
+	PasswordResetToken			[]byte
 	PasswordResetExpiration		int64
-	Password									string		`gorm:"-"`
-	EncryptedPassword					[]byte		`gorm:"not null"`
-	PasswordLastUpdated				int64
+	Password					string				`gorm:"-"`
+	EncryptedPassword			[]byte				`gorm:"not null"`
+	PasswordLastUpdated			int64
 }
 
 
@@ -93,8 +94,8 @@ func(this User) CheckPWResetToken(givenToken string) bool {
 
 // returns error if not valid, nil if is valid
 func(this User) IsValid() error {
-	if !utilities.IntArrContains(auth.GetUserRoles(), this.Role) {
-		return errors.New("Not a valid User Role")
+	if !this.Role.IsValid() {
+		return errors.New("Invalid User Role")
 	}
 
 	if !utilities.IsValidEmail(this.Email) {

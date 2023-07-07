@@ -1,6 +1,7 @@
 package services
 
 import (
+	"chi-users-project/app/utilities/enums"
 	"chi-users-project/app/models"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
@@ -9,16 +10,16 @@ import (
 )
 
 type BaseService struct {
-	db 						*gorm.DB
-	log					  zerolog.Logger
+	db 				*gorm.DB
+	log				zerolog.Logger
 	currentUser		models.User
 }
 
 
-func (bs *BaseService) setCurrentUser(userKey uuid.UUID) error {
-	user, findErr := bs.findUserByKey(userKey)
+func (bs *BaseService) setCurrentUser(id uuid.UUID) error {
+	user, findErr := bs.findUser(id)
 	if findErr != nil {
-		bs.log.Error().Msg(fmt.Sprintf("Can't find user with key: %s", userKey.String()))
+		bs.log.Error().Msg(fmt.Sprintf("Can't find user with id: %s", id.String()))
 		return findErr
 	}
 
@@ -41,9 +42,9 @@ func (bs *BaseService) setCurrentUserByEmail(email string) error {
 }
 
 
-func (bs BaseService) findUserByKey(userKey uuid.UUID) (models.User, error) {
+func (bs BaseService) findUser(id uuid.UUID) (models.User, error) {
 	user := models.User{}
-	if findErr := bs.db.Where("Key = $1", userKey).First(&user).Error; findErr != nil {
+	if findErr := bs.db.First(&user, id).Error; findErr != nil {
 		return user, findErr
 	}
 
@@ -61,6 +62,6 @@ func (bs BaseService) findUserByEmail(userEmail string) (models.User, error) {
 }
 
 
-func (bs BaseService) validateUserHasAccess(accessNeeded int) bool {
+func (bs BaseService) validateUserHasAccess(accessNeeded enums.UserRole) bool {
 	return bs.currentUser.Role >= accessNeeded
 }

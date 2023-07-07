@@ -2,7 +2,7 @@ package emails
 
 type SignupEmail struct {
 	BaseEmailRequest
-	FirstName						string
+	FirstName			string
 }
 
 func(this *SignupEmail) GenerateAndSetMessage() error {

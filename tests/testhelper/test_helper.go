@@ -16,17 +16,17 @@ import (
 
 
 type TestHelper struct {
-	RegularUser				models.User
-	RegularToken			string
-	AdminUser					models.User
-	AdminToken				string
+	RegularUser			models.User
+	RegularToken		string
+	AdminUser			models.User
+	AdminToken			string
 	SuperAdminUser		models.User
 	SuperAdminToken		string
 
-	dbConn						config.DBConn
-	service						services.BaseService
-	server						config.Router
-	t									*testing.T
+	dbConn				config.DBConn
+	service				services.BaseService
+	server				config.Router
+	t					*testing.T
 }
 
 

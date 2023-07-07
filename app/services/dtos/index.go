@@ -1,9 +1,9 @@
 package dtos
 
 import (
-	"github.com/google/uuid"
+	"chi-users-project/app/utilities/uuid"
 )
 
 type BaseDTO struct {
-	Key				uuid.UUID	`json:"key"`
+	ID		uuid.UUID	`json:"id"`
 }
