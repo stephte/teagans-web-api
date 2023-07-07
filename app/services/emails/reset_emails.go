@@ -7,7 +7,7 @@ import (
 // implements EmailRequest interface
 type PWResetEmail struct {
 	BaseEmailRequest
-	Token		string
+	Token				string
 }
 
 func(this *PWResetEmail) GenerateAndSetMessage() error {
