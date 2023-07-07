@@ -3,26 +3,26 @@ package services
 import (
 	"chi-users-project/app/services/mappers"
 	"chi-users-project/app/services/emails"
-	"chi-users-project/app/utilities/auth"
+	"chi-users-project/app/utilities/enums"
 	"chi-users-project/app/services/dtos"
-	"chi-users-project/app/models"
 	"github.com/google/uuid"
+	"chi-users-project/app/models"
 	"errors"
 )
 
 type UserService struct {
 	*BaseService
-	user						models.User
+	user			models.User
 }
 
 
-func(this UserService) GetUser(userKeyStr string) (dtos.UserDTO, dtos.ErrorDTO) {
-	err := this.setUserByKeyStr(userKeyStr)
+func(this UserService) GetUser(userIdStr string) (dtos.UserDTO, dtos.ErrorDTO) {
+	err := this.setUser(userIdStr)
 	if err != nil {
 		return dtos.UserDTO{}, dtos.CreateErrorDTO(err, 0, false)
 	}
 
-	if !this.validateUserHasAccess(auth.AdminAccess()) && this.currentUser.ID != this.user.ID {
+	if !this.validateUserHasAccess(enums.ADMIN) && this.currentUser.ID != this.user.ID {
 		return dtos.UserDTO{}, dtos.AccessDeniedError()
 	}
 
@@ -31,7 +31,7 @@ func(this UserService) GetUser(userKeyStr string) (dtos.UserDTO, dtos.ErrorDTO) 
 
 
 func (this UserService) GetUsers(dto dtos.PaginationDTO, path string) (dtos.PageResponseDTO, dtos.ErrorDTO) {
-	if !this.validateUserHasAccess(auth.AdminAccess()) {
+	if !this.validateUserHasAccess(enums.ADMIN) {
 		return dto.GetPageResponse(), dtos.AccessDeniedError()
 	}
 
@@ -59,8 +59,8 @@ func (this UserService) GetUsers(dto dtos.PaginationDTO, path string) (dtos.Page
 
 // takes in CreateUserDTO, returns UserDTO
 func (this UserService) CreateUser(dto dtos.CreateUserDTO) (dtos.UserDTO, dtos.ErrorDTO) {
-	if dto.Role > auth.RegularAccess()  {
-		if !this.validateUserHasAccess(auth.SuperAdminAccess()) {
+	if dto.Role > enums.REGULAR  {
+		if !this.validateUserHasAccess(enums.SUPERADMIN) {
 			this.log.Error().Msg("Invalid Role: User create with admin attempted by non super-admin")
 			return dtos.UserDTO{}, dtos.CreateErrorDTO(errors.New("Invalid create params"), 0, false)
 		}
@@ -82,33 +82,32 @@ func (this UserService) CreateUser(dto dtos.CreateUserDTO) (dtos.UserDTO, dtos.E
 
 
 // saved via a Map thats validated
-func (this UserService) UpdateUser(userKeyStr string, data map[string]interface{}) (dtos.UserDTO, dtos.ErrorDTO) {
+func (this UserService) UpdateUser(userIdStr string, data map[string]interface{}) (dtos.UserDTO, dtos.ErrorDTO) {
 	// validate User update data
 	validatedData, dataErr := dtos.ValidateUserMap(data)
 	if dataErr != nil {
 		return dtos.UserDTO{}, dtos.CreateErrorDTO(dataErr, 0, false)
 	}
 
-	err := this.setUserByKeyStr(userKeyStr)
+	err := this.setUser(userIdStr)
 	if err != nil {
 		return dtos.UserDTO{}, dtos.CreateErrorDTO(err, 0, false)
 	}
 
 	// check if role exists in data; else resume as if its equal to users current role
-	var role int
+	var role enums.UserRole
 	_, exists := validatedData["Role"]
 	if exists {
-		roleFloat, isFloat := validatedData["Role"].(float64)
-		if !isFloat {
-			return dtos.UserDTO{}, dtos.CreateErrorDTO(errors.New("Role is not a float64"), 0, false)
+		var success bool
+		role, success = enums.ValToRole(validatedData["Role"])
+		if !success {
+			return dtos.UserDTO{}, dtos.CreateErrorDTO(errors.New("Not able to convert role to UserRole type"), 0, false)
 		}
-
-		role = int(roleFloat)
 	} else {
 		role = this.user.Role
 	}
 
-	if !this.validateUserHasAccess(auth.SuperAdminAccess()) && (role != this.user.Role || this.currentUser.ID != this.user.ID) {
+	if !this.validateUserHasAccess(enums.SUPERADMIN) && (role != this.user.Role || this.currentUser.ID != this.user.ID) {
 		return dtos.UserDTO{}, dtos.AccessDeniedError()
 	}
 
@@ -121,14 +120,14 @@ func (this UserService) UpdateUser(userKeyStr string, data map[string]interface{
 
 
 // saves via UserDTO thats converted to a User model
-func (this UserService) UpdateUserOG(userKeyStr string, dto dtos.UserDTO) (dtos.UserDTO, dtos.ErrorDTO) {
-	err := this.setUserByKeyStr(userKeyStr)
+func (this UserService) UpdateUserOG(userIdStr string, dto dtos.UserDTO) (dtos.UserDTO, dtos.ErrorDTO) {
+	err := this.setUser(userIdStr)
 	if err != nil {
 		return dtos.UserDTO{}, dtos.CreateErrorDTO(err, 0, false)
 	}
 
 	// handle validation (only super admins can update Role)
-	if !this.validateUserHasAccess(auth.SuperAdminAccess()) && (dto.Role != this.user.Role || this.currentUser.ID != this.user.ID) {
+	if !this.validateUserHasAccess(enums.SUPERADMIN) && (dto.Role != this.user.Role || this.currentUser.ID != this.user.ID) {
 		return dto, dtos.AccessDeniedError()
 	}
 
@@ -143,13 +142,13 @@ func (this UserService) UpdateUserOG(userKeyStr string, dto dtos.UserDTO) (dtos.
 }
 
 
-func(this UserService) DeleteUser(userKeyStr string) dtos.ErrorDTO {
-	err := this.setUserByKeyStr(userKeyStr)
+func(this UserService) DeleteUser(userIdStr string) dtos.ErrorDTO {
+	err := this.setUser(userIdStr)
 	if err != nil {
 		return dtos.CreateErrorDTO(err, 0, false)
 	}
 
-	if !this.validateUserHasAccess(auth.SuperAdminAccess()) && this.currentUser.ID != this.user.ID {
+	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.user.ID {
 		return dtos.AccessDeniedError()
 	}
 
@@ -165,13 +164,13 @@ func(this UserService) DeleteUser(userKeyStr string) dtos.ErrorDTO {
 // ---------- Private ---------
 
 
-func(this *UserService) setUserByKeyStr(userKeyStr string) error {
-	key, parseErr := uuid.Parse(userKeyStr)
+func(this *UserService) setUser(userIdStr string) error {
+	id, parseErr := uuid.Parse(userIdStr)
 	if parseErr != nil {
 		return parseErr
 	}
 
-	user, findErr := this.findUserByKey(key)
+	user, findErr := this.findUser(id)
 	if findErr != nil {
 		return findErr
 	}
@@ -190,7 +189,7 @@ func(this UserService) sendSignupEmail(email, firstName string) error {
 	}
 
 	request.SetToEmails([]string{email})
-	request.SetSubject("Teagans App Signup Confirmation")
+	request.SetSubject("Teagans Golf App Signup Confirmation")
 
 	// generate html for email
 	err := request.GenerateAndSetMessage()

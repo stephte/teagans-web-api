@@ -1,21 +1,21 @@
 package dtos
 
 type LoginDTO struct {
-	Email			string
+	Email		string
 	Password	string
 }
 
 type LoginTokenDTO struct {
-	Token			string		`json:"jwt"`
+	Token		string		`json:"jwt"`
 }
 
 type EmailDTO struct {
-	Email			string
+	Email		string
 }
 
 type ConfirmResetTokenDTO struct {
-	Email			string
-	Token			string
+	Email		string
+	Token		string
 }
 
 type ResetPWDTO struct {

@@ -73,15 +73,15 @@ func(this *AuthService) ValidateJWT(jwt string, isPWReset bool) (bool, dtos.Erro
 		return this.invalidTokenErr()
 	}
 
-	userKey, parseErr := uuid.Parse(payload.Key)
+	userId, parseErr := uuid.Parse(payload.ID)
 	if parseErr != nil {
-		this.log.Error().Msg(fmt.Sprintf("Error parsing UUID: %s\n", payload.Key))
+		this.log.Error().Msg(fmt.Sprintf("Error parsing UUID: %s\n", payload.ID))
 		return this.invalidTokenErr()
 	}
 
-	findErr := this.setCurrentUser(userKey)
+	findErr := this.setCurrentUser(userId)
 	if findErr != nil {
-		this.log.Error().Msg(fmt.Sprintf("User not found: %s\n", payload.Key))
+		this.log.Error().Msg(fmt.Sprintf("User not found: %s\n", payload.ID))
 		return this.invalidTokenErr()
 	}
 

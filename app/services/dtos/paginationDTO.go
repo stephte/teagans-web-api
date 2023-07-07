@@ -5,19 +5,19 @@ import (
 )
 
 type PaginationDTO struct {
-	sort						string
-	page						int
-	limit						int
+	sort			string
+	page			int
+	limit			int
 
-	totalRows				int64
-	totalPages			int
+	totalRows		int64
+	totalPages		int
 
-	firstPage				string
-	lastPage				string
-	previousPage		string
-	nextPage				string
+	firstPage		string
+	lastPage		string
+	previousPage	string
+	nextPage		string
 
-	rows						interface{}
+	rows			interface{}
 }
 
 func(this PaginationDTO) GetOffset() int {

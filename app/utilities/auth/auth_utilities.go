@@ -54,25 +54,3 @@ func KillSomeTime(min int, max int) {
 
 	time.Sleep(time.Duration(amount) * time.Millisecond)
 }
-
-
-// ---------- User access control data -----------
-
-
-func GetUserRoles() []int {
-	return []int{
-		RegularAccess(), // "regular",
-		AdminAccess(), // "admin",
-		SuperAdminAccess(), // "super admin"
-	}
-}
-
-func RegularAccess() int {
-	return 1
-}
-func AdminAccess() int {
-	return 2
-}
-func SuperAdminAccess() int {
-	return 3
-}

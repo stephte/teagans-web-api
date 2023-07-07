@@ -18,7 +18,7 @@ func MapCreateUserDTOToUser(dto dtos.CreateUserDTO) models.User {
 func MapUserDTOToUser(dto dtos.UserDTO) models.User {
 	return models.User{
 		BaseModel: models.BaseModel{
-			Key: dto.Key,
+			ID: dto.ID,
 		},
 		FirstName: dto.FirstName,
 		LastName: dto.LastName,
@@ -30,7 +30,7 @@ func MapUserDTOToUser(dto dtos.UserDTO) models.User {
 func MapUserToUserDTO(user models.User) dtos.UserDTO {
 	return dtos.UserDTO{
 		BaseDTO: dtos.BaseDTO{
-			Key: user.Key,
+			ID: user.ID,
 		},
 		FirstName: user.FirstName,
 		LastName: user.LastName,

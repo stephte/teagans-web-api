@@ -114,7 +114,7 @@ func(this LoginService) genToken(pwReset bool) (string, dtos.ErrorDTO) {
 	}
 
 	payload := dtos.JWTPayloadDTO{
-		Key: this.currentUser.Key.String(),
+		ID: this.currentUser.ID.String(),
 		Issuer: "chi-users-project",
 		CreatedAt: time.Now().Unix(),
 	}

@@ -50,7 +50,7 @@ func TestUserFindWorks(t *testing.T) {
 	helper.InitAuth()
 	defer helper.CleanupAuth()
 
-	res := helper.SendAsRegularUser("get", fmt.Sprintf("/users/%s", helper.RegularUser.Key), nil)
+	res := helper.SendAsRegularUser("get", fmt.Sprintf("/users/%s", helper.RegularUser.ID), nil)
 	helper.AssertStatus(res, 200)
 }
 
@@ -60,7 +60,7 @@ func TestUserFindDoesntWorkForOtherUser(t *testing.T) {
 	helper.InitAuth()
 	defer helper.CleanupAuth()
 
-	res := helper.SendAsRegularUser("get", fmt.Sprintf("/users/%s", helper.AdminUser.Key), nil)
+	res := helper.SendAsRegularUser("get", fmt.Sprintf("/users/%s", helper.AdminUser.ID), nil)
 
 	helper.AssertStatus(res, 401)
 	helper.AssertErrDTOPresent(res)
@@ -72,10 +72,10 @@ func TestUserFindWorksForAdminUsers(t *testing.T) {
 	helper.InitAuth()
 	defer helper.CleanupAuth()
 
-	res := helper.SendAsSuperAdmin("get", fmt.Sprintf("/users/%s", helper.AdminUser.Key), nil)
+	res := helper.SendAsSuperAdmin("get", fmt.Sprintf("/users/%s", helper.AdminUser.ID), nil)
 	helper.AssertStatus(res, 200)
 
-	res = helper.SendAsSuperAdmin("get", fmt.Sprintf("/users/%s", helper.RegularUser.Key), nil)
+	res = helper.SendAsSuperAdmin("get", fmt.Sprintf("/users/%s", helper.RegularUser.ID), nil)
 	helper.AssertStatus(res, 200)
 }
 
@@ -108,10 +108,10 @@ func TestUserCreate(t *testing.T) {
 	helper.Assert(body.Email == "testymctest@test.com", "Email incorrect")
 	helper.Assert(body.Role == 1, "Role incorrect")
 
-	// get key from ResponseBody
-	key := body.Key
+	// get id from ResponseBody
+	id := body.ID
 
-	dres := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", key), nil)
+	dres := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", id), nil)
 	helper.AssertStatus(dres, 200)
 }
 
@@ -167,10 +167,10 @@ func TestValidAdminUserCreate(t *testing.T) {
 	helper.Assert(body.Email == "testymctest@test.com", "Email incorrect")
 	helper.Assert(body.Role == 2, "Role incorrect")
 
-	// get key from ResponseBody
-	key := body.Key
+	// get id from ResponseBody
+	id := body.ID
 
-	dres := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", key), nil)
+	dres := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", id), nil)
 	helper.AssertStatus(dres, 200)
 }
 
@@ -237,7 +237,7 @@ func  TestUserUpdateWorksForUser(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
 	body := helper.GetUserDTO(res)
@@ -264,7 +264,7 @@ func  TestUserUpdateFailsForOtherUser(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.AdminUser.Key), reqData)
+	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.AdminUser.ID), reqData)
 
 	helper.AssertStatus(res, 401)
 	helper.AssertErrDTOPresent(res)
@@ -285,7 +285,7 @@ func  TestUserUpdateWorksForSuperAdmin(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsSuperAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsSuperAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
 	body := helper.GetUserDTO(res)
@@ -311,7 +311,7 @@ func  TestSuperAdminCanUpdateRole(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsSuperAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsSuperAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
 	body := helper.GetUserDTO(res)
@@ -337,7 +337,7 @@ func  TestAdminCanNotUpdateRole(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 
 	helper.AssertStatus(res, 401)
 	helper.AssertErrDTOPresent(res)
@@ -358,7 +358,7 @@ func TestUserUpdateInvalidEmail(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 
 	helper.AssertStatus(res, 400)
 	helper.AssertErrDTOPresent(res)
@@ -384,7 +384,7 @@ func TestUserUpdateOGWorksForUser(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
 	body := helper.GetUserDTO(res)
@@ -412,7 +412,7 @@ func TestUserUpdateOGFailsForOtherUser(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.AdminUser.Key), reqData)
+	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.AdminUser.ID), reqData)
 
 	helper.AssertStatus(res, 401)
 	helper.AssertErrDTOPresent(res)
@@ -436,7 +436,7 @@ func TestUserUpdateOGWorksForSuperAdmin(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
 	body := helper.GetUserDTO(res)
@@ -464,7 +464,7 @@ func TestSuperAdminCanUpdateRoleWithOG(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
 	body := helper.GetUserDTO(res)
@@ -492,7 +492,7 @@ func TestUserUpdateOGInvalidEmail(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 
 	helper.AssertStatus(res, 400)
 	helper.AssertErrDTOPresent(res)
@@ -516,7 +516,7 @@ func TestAdminCanNotUpdateRoleWithOG(t *testing.T) {
 		t.Fatal(jsonErr.Error())
 	}
 
-	res := helper.SendAsAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.Key), reqData)
+	res := helper.SendAsAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 
 	helper.AssertStatus(res, 401)
 	helper.AssertErrDTOPresent(res)
@@ -530,7 +530,7 @@ func TestDeleteWorksForCurrentUser(t *testing.T) {
 	helper.InitAuth()
 	defer helper.CleanupAuth()
 
-	res := helper.SendAsRegularUser("delete", fmt.Sprintf("/users/%s", helper.RegularUser.Key), nil)
+	res := helper.SendAsRegularUser("delete", fmt.Sprintf("/users/%s", helper.RegularUser.ID), nil)
 	helper.AssertStatus(res, 200)
 }
 
@@ -540,7 +540,7 @@ func TestDeleteDoesNotWorksForOtherUser(t *testing.T) {
 	helper.InitAuth()
 	defer helper.CleanupAuth()
 
-	res := helper.SendAsRegularUser("delete", fmt.Sprintf("/users/%s", helper.AdminUser.Key), nil)
+	res := helper.SendAsRegularUser("delete", fmt.Sprintf("/users/%s", helper.AdminUser.ID), nil)
 
 	helper.AssertStatus(res, 401)
 	helper.AssertErrDTOPresent(res)
@@ -552,6 +552,6 @@ func TestDeleteWorksForSuperUser(t *testing.T) {
 	helper.InitAuth()
 	defer helper.CleanupAuth()
 
-	res := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", helper.AdminUser.Key), nil)
+	res := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", helper.AdminUser.ID), nil)
 	helper.AssertStatus(res, 200)
 }
