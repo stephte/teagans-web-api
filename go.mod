@@ -1,4 +1,4 @@
-module chi-users-project
+module youtube-downloader
 
 go 1.18
 

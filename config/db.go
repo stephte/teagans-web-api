@@ -1,7 +1,7 @@
 package config
 
 import (
-	"chi-users-project/app/models"
+	"youtube-downloader/app/models"
 	"gorm.io/driver/postgres"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"

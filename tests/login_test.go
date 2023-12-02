@@ -1,8 +1,8 @@
 package tests
 
 import (
-	"chi-users-project/app/services/dtos"
-	"chi-users-project/tests/testhelper"
+	"youtube-downloader/app/services/dtos"
+	"youtube-downloader/tests/testhelper"
 	"encoding/json"
 	"testing"
 	"strings"

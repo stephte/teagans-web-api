@@ -1,8 +1,8 @@
 package dtos
 
 import (
-	"chi-users-project/app/utilities/enums"
-	"chi-users-project/app/utilities"
+	"youtube-downloader/app/utilities/enums"
+	"youtube-downloader/app/utilities"
 	"strings"
 	"errors"
 	"fmt"

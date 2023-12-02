@@ -1,7 +1,7 @@
 package models
 
 import (
-	"chi-users-project/app/utilities/uuid"
+	"youtube-downloader/app/utilities/uuid"
 	"gorm.io/gorm"
 	"time"
 )

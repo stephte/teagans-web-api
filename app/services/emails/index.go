@@ -1,7 +1,7 @@
 package emails
 
 import (
-	"chi-users-project/app/utilities"
+	"youtube-downloader/app/utilities"
 	"net/smtp"
 	"errors"
 	"bytes"
@@ -31,9 +31,9 @@ func(this BaseEmailRequest) SendEmail() error {
 	}
 
 	fmt.Printf("Sending email to: %s\n", this.GetToEmailString())
-	auth := smtp.PlainAuth("", os.Getenv("CHI_EMAIL_UNAME"), os.Getenv("CHI_EMAIL_PW"), os.Getenv("CHI_EMAIL_HOST"))
+	auth := smtp.PlainAuth("", os.Getenv("CHI_YT_EMAIL_UNAME"), os.Getenv("CHI_YT_EMAIL_PW"), os.Getenv("CHI_YT_EMAIL_HOST"))
 
-	hostWithPort := fmt.Sprintf("%s:%s", os.Getenv("CHI_EMAIL_HOST"), os.Getenv("CHI_EMAIL_PORT"))
+	hostWithPort := fmt.Sprintf("%s:%s", os.Getenv("CHI_YT_EMAIL_HOST"), os.Getenv("CHI_YT_EMAIL_PORT"))
 
 	err := smtp.SendMail(hostWithPort, auth, this.from, this.GetToEmails(), this.message)
 

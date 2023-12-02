@@ -1,7 +1,7 @@
 package main
 
 import (
-	"chi-users-project/config"
+	"youtube-downloader/config"
 	"github.com/go-chi/httplog"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
@@ -13,7 +13,7 @@ import (
 
 
 func main() {
-	logger := httplog.NewLogger("chi-users-project", httplog.Options{
+	logger := httplog.NewLogger("youtube-downloader", httplog.Options{
     JSON: true,
   })
 
@@ -44,22 +44,22 @@ func main() {
 
 	router := config.SetupRouter(logger, dbConnection.GetDB())
 
-	router.StartGracefulServer(os.Getenv("CHI_BASE_URL"), os.Getenv("CHI_PORT"))
+	router.StartGracefulServer(os.Getenv("CHI_YT_BASE_URL"), os.Getenv("CHI_YT_PORT"))
 }
 
 
 func initDB(logger zerolog.Logger) (config.DBConn, error) {
 	dbConnection := config.InitDBConn(logger, true)
 
-	port, err := strconv.Atoi(os.Getenv("CHI_DBPORT"))
+	port, err := strconv.Atoi(os.Getenv("CHI_YT_DBPORT"))
 	if err != nil {
 		return dbConnection, err
 	}
 
-	dbConnection.SetHost(os.Getenv("CHI_DBHOST"))
-	dbConnection.SetUser(os.Getenv("CHI_DBUSER"))
-	dbConnection.SetPassword(os.Getenv("CHI_DBPASSWORD"))
-	dbConnection.SetName(os.Getenv("CHI_DBNAME"))
+	dbConnection.SetHost(os.Getenv("CHI_YT_DBHOST"))
+	dbConnection.SetUser(os.Getenv("CHI_YT_DBUSER"))
+	dbConnection.SetPassword(os.Getenv("CHI_YT_DBPASSWORD"))
+	dbConnection.SetName(os.Getenv("CHI_YT_DBNAME"))
 	dbConnection.SetPort(port)
 
 	err = dbConnection.FireUp()

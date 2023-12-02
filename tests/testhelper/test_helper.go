@@ -1,11 +1,11 @@
 package testhelper
 
 import (
-	"chi-users-project/app/services/dtos"
-	"chi-users-project/app/services"
-	"chi-users-project/app/models"
+	"youtube-downloader/app/services/dtos"
+	"youtube-downloader/app/services"
+	"youtube-downloader/app/models"
 	"github.com/go-chi/httplog"
-	"chi-users-project/config"
+	"youtube-downloader/config"
 	"github.com/joho/godotenv"
 	"testing"
 	"strconv"
@@ -35,7 +35,7 @@ type TestHelper struct {
 
 func InitTestDBAndService(t *testing.T) (TestHelper) {
 	fmt.Print("\n")
-	logger := httplog.NewLogger("chi-users-project-tests", httplog.Options{ JSON: true })
+	logger := httplog.NewLogger("youtube-downloader-tests", httplog.Options{ JSON: true })
 
 	envErr := godotenv.Load("../.env/test.env")
 	if envErr != nil {
@@ -44,15 +44,15 @@ func InitTestDBAndService(t *testing.T) (TestHelper) {
 
 	dbConnection := config.InitDBConn(logger, false)
 
-	port, err := strconv.Atoi(os.Getenv("CHI_DBPORT"))
+	port, err := strconv.Atoi(os.Getenv("CHI_YT_DBPORT"))
 	if err != nil {
 		t.Fatalf("failed to convert port to int: %s", err.Error())
 	}
 
-	dbConnection.SetHost(os.Getenv("CHI_DBHOST"))
-	dbConnection.SetUser(os.Getenv("CHI_DBUSER"))
-	dbConnection.SetPassword(os.Getenv("CHI_DBPASSWORD"))
-	dbConnection.SetName(os.Getenv("CHI_DBNAME"))
+	dbConnection.SetHost(os.Getenv("CHI_YT_DBHOST"))
+	dbConnection.SetUser(os.Getenv("CHI_YT_DBUSER"))
+	dbConnection.SetPassword(os.Getenv("CHI_YT_DBPASSWORD"))
+	dbConnection.SetName(os.Getenv("CHI_YT_DBNAME"))
 	dbConnection.SetPort(port)
 
 	err = dbConnection.FireUp()

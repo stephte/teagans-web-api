@@ -15,7 +15,7 @@ func parseFiles(files ...string) (*template.Template, error) {
 
 func InitBaseRequest() BaseEmailRequest {
 	bs := BaseEmailRequest{
-		from: os.Getenv("CHI_APP_EMAIL_ADDR"),
+		from: os.Getenv("CHI_YT_APP_EMAIL_ADDR"),
 	}
 
 	return bs

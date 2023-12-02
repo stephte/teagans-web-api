@@ -1,10 +1,10 @@
 package services
 
 import (
-	"chi-users-project/app/services/emails"
-	"chi-users-project/app/utilities/auth"
-	"chi-users-project/app/services/dtos"
-	"chi-users-project/app/models"
+	"youtube-downloader/app/services/emails"
+	"youtube-downloader/app/utilities/auth"
+	"youtube-downloader/app/services/dtos"
+	"youtube-downloader/app/models"
 	"errors"
 	"time"
 )
@@ -115,7 +115,7 @@ func(this LoginService) genToken(pwReset bool) (string, dtos.ErrorDTO) {
 
 	payload := dtos.JWTPayloadDTO{
 		ID: this.currentUser.ID.String(),
-		Issuer: "chi-users-project",
+		Issuer: "youtube-downloader",
 		CreatedAt: time.Now().Unix(),
 	}
 
@@ -141,7 +141,7 @@ func(this LoginService) sendPWResetToken(token string, email string) error {
 		Token: token,
 	}
 	request.SetToEmails([]string{email})
-	request.SetSubject("Chi App Password Reset")
+	request.SetSubject("YouTube Downloader App Password Reset")
 
 	// generate html for email
 	err := request.GenerateAndSetMessage()

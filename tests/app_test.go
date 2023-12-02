@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"chi-users-project/tests/testhelper"
+	"youtube-downloader/tests/testhelper"
 	"testing"
 )
 

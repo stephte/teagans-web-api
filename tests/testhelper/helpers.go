@@ -1,7 +1,7 @@
 package testhelper
 
 import (
-	"chi-users-project/app/services/dtos"
+	"youtube-downloader/app/services/dtos"
 	"net/http/httptest"
 	"encoding/json"
 	"path/filepath"

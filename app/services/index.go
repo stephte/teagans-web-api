@@ -1,8 +1,8 @@
 package services
 
 import (
-	"chi-users-project/app/utilities/enums"
-	"chi-users-project/app/models"
+	"youtube-downloader/app/utilities/enums"
+	"youtube-downloader/app/models"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"

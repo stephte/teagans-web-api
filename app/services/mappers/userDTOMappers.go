@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"chi-users-project/app/services/dtos"
-	"chi-users-project/app/models"
+	"youtube-downloader/app/services/dtos"
+	"youtube-downloader/app/models"
 )
 
 func MapCreateUserDTOToUser(dto dtos.CreateUserDTO) models.User {

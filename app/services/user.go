@@ -1,12 +1,12 @@
 package services
 
 import (
-	"chi-users-project/app/services/mappers"
-	"chi-users-project/app/services/emails"
-	"chi-users-project/app/utilities/enums"
-	"chi-users-project/app/services/dtos"
+	"youtube-downloader/app/services/mappers"
+	"youtube-downloader/app/services/emails"
+	"youtube-downloader/app/utilities/enums"
+	"youtube-downloader/app/services/dtos"
 	"github.com/google/uuid"
-	"chi-users-project/app/models"
+	"youtube-downloader/app/models"
 	"errors"
 )
 
@@ -189,7 +189,7 @@ func(this UserService) sendSignupEmail(email, firstName string) error {
 	}
 
 	request.SetToEmails([]string{email})
-	request.SetSubject("Teagans Golf App Signup Confirmation")
+	request.SetSubject("YouTube Downloader App Signup Confirmation")
 
 	// generate html for email
 	err := request.GenerateAndSetMessage()

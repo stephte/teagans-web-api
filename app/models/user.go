@@ -1,9 +1,9 @@
 package models
 
 import (
-	"chi-users-project/app/utilities/enums"
-	"chi-users-project/app/utilities/auth"
-	"chi-users-project/app/utilities"
+	"youtube-downloader/app/utilities/enums"
+	"youtube-downloader/app/utilities/auth"
+	"youtube-downloader/app/utilities"
 	"gorm.io/gorm"
 	"strings"
 	"errors"

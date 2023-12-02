@@ -1,7 +1,7 @@
 package services
 
 import (
-	"chi-users-project/app/services/dtos"
+	"youtube-downloader/app/services/dtos"
 	"github.com/google/uuid"
 	"encoding/base64"
 	"encoding/json"

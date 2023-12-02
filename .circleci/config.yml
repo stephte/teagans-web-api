@@ -12,15 +12,15 @@ jobs:
     docker:
       - image: cimg/go:1.18
         environment:
-          CHI_DBHOST: 127.0.0.1
-          CHI_DBUSER: test
-          CHI_DBPASSWORD:
-          CHI_DBNAME: chitest
-          CHI_DBPORT: 5432
+          CHI_YT_DBHOST: 127.0.0.1
+          CHI_YT_DBUSER: test
+          CHI_YT_DBPASSWORD:
+          CHI_YT_DBNAME: yttest
+          CHI_YT_DBPORT: 5432
       - image: cimg/postgres:14.3
         environment:
           POSTGRES_USER: test
-          POSTGRES_DB: chitest
+          POSTGRES_DB: yttest
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:

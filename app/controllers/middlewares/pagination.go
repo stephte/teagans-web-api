@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"chi-users-project/app/controllers/http_utils"
-	"chi-users-project/app/services/dtos"
+	"youtube-downloader/app/controllers/http_utils"
+	"youtube-downloader/app/services/dtos"
 	"net/http"
 	"strconv"
 	"context"
