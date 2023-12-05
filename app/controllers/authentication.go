@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"chi-users-project/app/controllers/http_utils"
+	"chi-users-project/app/utilities/http_utils"
 	"chi-users-project/app/services/dtos"
 	"chi-users-project/app/services"
 	"github.com/go-chi/render"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-
+// TODO: add a middleware that tells us what env we are in
 func Login(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.LoginDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
@@ -20,8 +20,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.LoginService{BaseService: baseService}
+	tokenDTO, maxAge, errDTO := service.LoginUser(dto, true)
 
-	tokenDTO, errDTO := service.LoginUser(dto, true)
+	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge)
 
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
@@ -86,8 +87,9 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.LoginService{BaseService: baseService}
-	
-	tokenDTO, errDTO := service.UpdateUserPassword(dto)
+	tokenDTO, maxAge, errDTO := service.UpdateUserPassword(dto)
+
+	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge)
 
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)

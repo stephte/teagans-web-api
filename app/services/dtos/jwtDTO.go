@@ -24,6 +24,7 @@ type JWTPayloadDTO struct {
 	Expiration		int64		`json:"exp"`
 	Issuer			string		`json:"iss"`
 	PRT				bool		`json:"prt"`	// is password reset
+	CSRF			string		`json:"csrf"`
 }
 
 func(this JWTPayloadDTO) Exists() bool {

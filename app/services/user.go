@@ -189,7 +189,7 @@ func(this UserService) sendSignupEmail(email, firstName string) error {
 	}
 
 	request.SetToEmails([]string{email})
-	request.SetSubject("Teagans Golf App Signup Confirmation")
+	request.SetSubject("Teagans Users App Signup Confirmation")
 
 	// generate html for email
 	err := request.GenerateAndSetMessage()

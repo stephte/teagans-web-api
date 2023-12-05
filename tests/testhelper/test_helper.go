@@ -18,10 +18,13 @@ import (
 type TestHelper struct {
 	RegularUser			models.User
 	RegularToken		string
+	RegularCsrf			string
 	AdminUser			models.User
 	AdminToken			string
+	AdminCsrf			string
 	SuperAdminUser		models.User
 	SuperAdminToken		string
+	SuperAdminCsrf		string
 
 	dbConn				config.DBConn
 	service				services.BaseService
@@ -81,21 +84,21 @@ func(this *TestHelper) InitAuth() {
 		Password: "testpassword7",
 	}
 
-	this.SuperAdminToken = this.getTokenViaService(superDTO)
+	this.SuperAdminToken, this.SuperAdminCsrf = this.getTokenViaService(superDTO)
 
 	adminDTO := dtos.LoginDTO {
 		Email: "admin@test.com",
 		Password: "testpassword8",
 	}
 
-	this.AdminToken = this.getTokenViaService(adminDTO)
+	this.AdminToken, this.AdminCsrf = this.getTokenViaService(adminDTO)
 
 	regularDTO := dtos.LoginDTO {
 		Email: "regular@test.com",
 		Password: "testpassword9",
 	}
 
-	this.RegularToken = this.getTokenViaService(regularDTO)
+	this.RegularToken, this.RegularCsrf = this.getTokenViaService(regularDTO)
 }
 
 
@@ -163,14 +166,14 @@ func(this TestHelper) Cleanup() {
 }
 
 
-func(this TestHelper) getTokenViaService(creds dtos.LoginDTO) string {
+func(this TestHelper) getTokenViaService(creds dtos.LoginDTO) (string, string) {
 	service := services.LoginService{BaseService: &this.service}
 
-	tokenDTO, _ := service.LoginUser(creds, false)
+	tokenDTO, _, _ := service.LoginUser(creds, false)
 
 	if tokenDTO.Token == "" {
 		panic(errors.New("No Token!!"))
 	}
 
-	return tokenDTO.Token
+	return tokenDTO.Token, tokenDTO.CSRF
 }

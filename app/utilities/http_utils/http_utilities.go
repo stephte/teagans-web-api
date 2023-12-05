@@ -33,3 +33,17 @@ func GetRequestPath(r *http.Request) string {
 
 	return stringsArr[0]
 }
+
+// sets the Auth cookie on response writer
+func SetAuthCookie(w http.ResponseWriter, token string, maxAge int64) {
+	cookie := &http.Cookie{
+		Name: "Auth",
+		Value: token,
+		MaxAge: int(maxAge),
+		Secure: true,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Path: "/",
+	}
+	http.SetCookie(w, cookie)
+}

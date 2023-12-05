@@ -47,7 +47,7 @@ func(this AuthService) GenerateJWT(header dtos.JWTHeaderDTO, payload dtos.JWTPay
 }
 
 
-func(this *AuthService) ValidateJWT(jwt string, isPWReset bool) (bool, dtos.ErrorDTO) {
+func(this *AuthService) ValidateJWT(jwt, csrf string, isPWReset bool) (bool, dtos.ErrorDTO) {
 	splitJWT := strings.Split(jwt, ".")
 
 	if len(splitJWT) != 3 {
@@ -71,6 +71,14 @@ func(this *AuthService) ValidateJWT(jwt string, isPWReset bool) (bool, dtos.Erro
 	if marshalErr != nil {
 		this.log.Error().Err(marshalErr).Msg("")
 		return this.invalidTokenErr()
+	}
+
+	// not using CSRF for PW reset tokens for now
+	if !isPWReset {
+		if payload.CSRF != csrf {
+			this.log.Error().Msg("Invalid CSRF\n")
+			return this.invalidTokenErr()
+		}
 	}
 
 	userId, parseErr := uuid.Parse(payload.ID)

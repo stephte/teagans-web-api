@@ -8,6 +8,10 @@ import (
 
 type UUID uuid.UUID
 
+func New() UUID {
+	return UUID(uuid.New())
+}
+
 func(this *UUID) Scan(value interface{}) error {
 	var u uuid.UUID
 	if value == nil {
