@@ -76,7 +76,7 @@ func(this *AuthService) ValidateJWT(jwt, csrf string, isPWReset bool) (bool, dto
 	// not using CSRF for PW reset tokens for now
 	if !isPWReset {
 		if payload.CSRF != csrf {
-			this.log.Error().Msg("Invalid CSRF\n")
+			this.log.Error().Msg("Invalid CSRF")
 			return this.invalidTokenErr()
 		}
 	}

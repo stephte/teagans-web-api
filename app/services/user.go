@@ -17,9 +17,14 @@ type UserService struct {
 
 
 func(this UserService) GetUser(userIdStr string) (dtos.UserDTO, dtos.ErrorDTO) {
-	err := this.setUser(userIdStr)
-	if err != nil {
-		return dtos.UserDTO{}, dtos.CreateErrorDTO(err, 0, false)
+	// if they ask for current, get current user
+	if userIdStr == "current" {
+		this.user = this.currentUser
+	} else {
+		err := this.setUser(userIdStr)
+		if err != nil {
+			return dtos.UserDTO{}, dtos.CreateErrorDTO(err, 0, false)
+		}
 	}
 
 	if !this.validateUserHasAccess(enums.ADMIN) && this.currentUser.ID != this.user.ID {
