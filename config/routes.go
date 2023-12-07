@@ -55,6 +55,11 @@ func(this *Router) defineRoutes() {
 			r.Delete("/", controllers.DeleteUser)
 		})
 	})
+
+	r.Route("/download", func(r chi.Router) {
+		r.Use(middle.ValidateJWT)	
+		r.Post("/", controllers.DownloadVideo)
+	})
 }
 
 // ----- Other Router/server methods -----

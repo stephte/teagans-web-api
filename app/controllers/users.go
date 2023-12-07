@@ -133,5 +133,5 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http_utils.BlankSuccessResponse(w, r)
+	render.NoContent(w, r)
 }

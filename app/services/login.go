@@ -115,7 +115,7 @@ func(this LoginService) genToken(pwReset bool) (string, dtos.ErrorDTO) {
 
 	payload := dtos.JWTPayloadDTO{
 		ID: this.currentUser.ID.String(),
-		Issuer: "youtube-downloader",
+		Issuer: "youtube-downloader-api",
 		CreatedAt: time.Now().Unix(),
 	}
 
