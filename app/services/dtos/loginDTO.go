@@ -7,6 +7,7 @@ type LoginDTO struct {
 
 type LoginTokenDTO struct {
 	Token		string		`json:"jwt"`
+	CSRF		string		`json:"csrf"`
 }
 
 type EmailDTO struct {

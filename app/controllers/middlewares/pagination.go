@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"chi-users-project/app/controllers/http_utils"
+	"chi-users-project/app/utilities/http_utils"
 	"chi-users-project/app/services/dtos"
 	"net/http"
 	"strconv"

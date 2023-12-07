@@ -1,14 +1,13 @@
 package controllers
 
 import (
-	"chi-users-project/app/controllers/http_utils"
+	"chi-users-project/app/utilities/http_utils"
 	"chi-users-project/app/services/dtos"
 	"chi-users-project/app/services"
 	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
 )
-
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.LoginDTO
@@ -20,8 +19,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.LoginService{BaseService: baseService}
+	tokenDTO, maxAge, errDTO := service.LoginUser(dto, true)
 
-	tokenDTO, errDTO := service.LoginUser(dto, true)
+	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge)
 
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
@@ -29,6 +29,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, tokenDTO)
+}
+
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	http_utils.DeleteAuthCookie(w)
+
+	render.NoContent(w, r)
 }
 
 
@@ -86,8 +93,9 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.LoginService{BaseService: baseService}
-	
-	tokenDTO, errDTO := service.UpdateUserPassword(dto)
+	tokenDTO, maxAge, errDTO := service.UpdateUserPassword(dto)
+
+	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge)
 
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)

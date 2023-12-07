@@ -2,6 +2,7 @@ package services
 
 import (
 	"chi-users-project/app/services/emails"
+	"chi-users-project/app/utilities/uuid"
 	"chi-users-project/app/utilities/auth"
 	"chi-users-project/app/services/dtos"
 	"chi-users-project/app/models"
@@ -14,7 +15,7 @@ type LoginService struct {
 }
 
 
-func(this *LoginService) LoginUser(credentials dtos.LoginDTO, killTime bool) (dtos.LoginTokenDTO, dtos.ErrorDTO) {
+func(this *LoginService) LoginUser(credentials dtos.LoginDTO, killTime bool) (dtos.LoginTokenDTO, int64, dtos.ErrorDTO) {
 	// help protect against brute force attack
 	if killTime {
 		auth.KillSomeTime(967, 2978)
@@ -22,17 +23,17 @@ func(this *LoginService) LoginUser(credentials dtos.LoginDTO, killTime bool) (dt
 
 	findErr := this.setCurrentUserByEmail(credentials.Email)
 	if findErr != nil {
-		return dtos.LoginTokenDTO{}, dtos.CreateErrorDTO(errors.New("Email or Password Incorrect"), 401, false)
+		return dtos.LoginTokenDTO{}, 0, dtos.CreateErrorDTO(errors.New("Email or Password Incorrect"), 401, false)
 	}
 
 	if !this.currentUser.CheckPassword(credentials.Password) {
-		return dtos.LoginTokenDTO{}, dtos.CreateErrorDTO(errors.New("Email or Password Incorrect"), 401, false)
+		return dtos.LoginTokenDTO{}, 0, dtos.CreateErrorDTO(errors.New("Email or Password Incorrect"), 401, false)
 	}
 
 	// then create JWT token and return it
-	token, tokenErrDTO := this.genToken(false)
+	token, csrf, maxAge, tokenErrDTO := this.genToken(false)
 
-	return dtos.LoginTokenDTO{Token: token}, tokenErrDTO
+	return dtos.LoginTokenDTO{Token: token, CSRF: csrf}, maxAge, tokenErrDTO
 }
 
 
@@ -65,11 +66,11 @@ func(this LoginService) StartPWReset(dto dtos.EmailDTO) (dtos.ErrorDTO) {
 func(this *LoginService) ConfirmResetToken(dto dtos.ConfirmResetTokenDTO) (dtos.LoginTokenDTO, dtos.ErrorDTO) {
 	findErr := this.setCurrentUserByEmail(dto.Email) 
 	if findErr != nil {
-		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError()
+		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	if !this.currentUser.CheckPWResetToken(dto.Token) {
-		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError()
+		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	tokenExpired := this.currentUser.PasswordResetExpiration < time.Now().Unix()
@@ -84,51 +85,59 @@ func(this *LoginService) ConfirmResetToken(dto dtos.ConfirmResetTokenDTO) (dtos.
 	}
 
 	// create JWT token with PRT set to true, expiration in 1 hour (or less)
-	token, tokenErrDTO := this.genToken(true)
+	// TODO: add csrf/maxAge handling (if using cookies for PW reset... which may not do)
+	token, _, _, tokenErrDTO := this.genToken(true)
 
 	return dtos.LoginTokenDTO{Token: token}, tokenErrDTO
 }
 
 
-func(this LoginService) UpdateUserPassword(dto dtos.ResetPWDTO) (dtos.LoginTokenDTO, dtos.ErrorDTO) {
+func(this LoginService) UpdateUserPassword(dto dtos.ResetPWDTO) (dtos.LoginTokenDTO, int64, dtos.ErrorDTO) {
 	this.currentUser.Password = dto.Password
 	if saveErr := this.db.Save(&this.currentUser).Error; saveErr != nil {
 		this.log.Error().Msg(saveErr.Error())
-		return dtos.LoginTokenDTO{}, dtos.CreateErrorDTO(saveErr, 0, false)
+		return dtos.LoginTokenDTO{}, 0, dtos.CreateErrorDTO(saveErr, 0, false)
 	}
 
 	// then create new JWT token and return it
-	token, tokenErrDTO := this.genToken(false)
+	token, csrf, maxAge, tokenErrDTO := this.genToken(false)
 
-	return dtos.LoginTokenDTO{Token: token}, tokenErrDTO
+	return dtos.LoginTokenDTO{Token: token, CSRF: csrf}, maxAge, tokenErrDTO
 }
 
 
 // ---------- Private Methods ----------
 
-
-func(this LoginService) genToken(pwReset bool) (string, dtos.ErrorDTO) {
+//												 jwt	 csrf	maxAge   any error
+func(this LoginService) genToken(pwReset bool) (string, string, int64, dtos.ErrorDTO) {
 	header := dtos.JWTHeaderDTO{
 		Algorithm: "HS256",
 		Type: "JWT",
 	}
 
+	csrf := uuid.New().String()
+
 	payload := dtos.JWTPayloadDTO{
 		ID: this.currentUser.ID.String(),
 		Issuer: "chi-users-project",
 		CreatedAt: time.Now().Unix(),
+		CSRF: csrf,
 	}
 
+	now := time.Now()
 	if pwReset {
 		payload.PRT = true
-		payload.Expiration = time.Now().Add(time.Minute * 30).Unix()
+		payload.Expiration = time.Now().Add(time.Minute * 20).Unix()
 	} else {
-		payload.Expiration = time.Now().Add(time.Hour * 4).Unix()
+		payload.Expiration = now.Add(time.Hour * 4).Unix()
 	}
 
-	authService := AuthService{this.BaseService}
+	maxAge := payload.Expiration - now.Unix()
 
-	return authService.GenerateJWT(header, payload)
+	authService := AuthService{this.BaseService}
+	jwt, jerr := authService.GenerateJWT(header, payload)
+
+	return jwt, csrf, maxAge, jerr
 }
 
 

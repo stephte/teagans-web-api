@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"chi-users-project/app/controllers/http_utils"
+	"chi-users-project/app/utilities/http_utils"
 	"chi-users-project/app/services/dtos"
 	"chi-users-project/app/services"
 	"github.com/go-chi/chi/v5"
@@ -133,5 +133,5 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http_utils.BlankSuccessResponse(w, r)
+	render.NoContent(w, r)
 }

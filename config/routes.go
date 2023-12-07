@@ -36,6 +36,7 @@ func(this *Router) defineRoutes() {
 	// authentication + password handling
 	r.Route("/auth", func(r chi.Router) {
 		r.Post("/login", controllers.Login)
+		r.Post("/logout", controllers.Logout)
 		r.Post("/reset-password", controllers.StartPWReset)
 		r.Post("/confirm-reset-token", controllers.ConfirmPasswordResetToken)
 		r.With(middle.ValidatePWResetJWT).Post("/update-password", controllers.UpdatePassword)
