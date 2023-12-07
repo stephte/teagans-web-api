@@ -21,6 +21,6 @@ func CreateErrorDTO(err error, status int, relogin bool) ErrorDTO {
 }
 
 
-func AccessDeniedError() ErrorDTO {
-	return ErrorDTO{"Access Denied", 401, false}
+func AccessDeniedError(relogin bool) ErrorDTO {
+	return ErrorDTO{"Access Denied", 401, relogin}
 }

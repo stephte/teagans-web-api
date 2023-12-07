@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"youtube-downloader/app/controllers/http_utils"
+	"youtube-downloader/app/utilities/http_utils"
 	"youtube-downloader/app/services/dtos"
 	"net/http"
 	"strconv"

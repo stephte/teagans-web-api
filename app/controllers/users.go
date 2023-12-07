@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"youtube-downloader/app/controllers/http_utils"
+	"youtube-downloader/app/utilities/http_utils"
 	"youtube-downloader/app/services/dtos"
 	"youtube-downloader/app/services"
 	"github.com/go-chi/chi/v5"

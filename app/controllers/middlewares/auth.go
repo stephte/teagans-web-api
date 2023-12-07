@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"youtube-downloader/app/controllers/http_utils"
+	"youtube-downloader/app/utilities/http_utils"
 	"youtube-downloader/app/services/dtos"
 	"youtube-downloader/app/services"
 	"net/http"
@@ -14,7 +14,9 @@ import (
 func ValidateJWT(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, authService := getAuthTokenAndService(r)
-		jwtValid, tokenErrDTO := authService.ValidateJWT(token, false)
+		csrf := r.Header.Get("CSRF")
+
+		jwtValid, tokenErrDTO := authService.ValidateJWT(token, csrf, false)
 
 		ctx, errDTO := handleErrDTO(jwtValid, tokenErrDTO, r)
 		if errDTO.Exists() {
@@ -30,8 +32,9 @@ func ValidateJWT(next http.Handler) (http.Handler) {
 func ValidatePWResetJWT(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, authService := getAuthTokenAndService(r)
+		csrf := r.Header.Get("CSRF")
 
-		jwtValid, tokenErrDTO := authService.ValidateJWT(token, true)
+		jwtValid, tokenErrDTO := authService.ValidateJWT(token, csrf, true)
 
 		ctx, errDTO := handleErrDTO(jwtValid, tokenErrDTO, r)
 		if errDTO.Exists() {
@@ -47,8 +50,9 @@ func ValidatePWResetJWT(next http.Handler) (http.Handler) {
 func ValidateOptionalJWT(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token, authService := getAuthTokenAndService(r)
+		csrf := r.Header.Get("CSRF")
 
-		jwtValid, tokenErrDTO := authService.ValidateJWT(token, false)
+		jwtValid, tokenErrDTO := authService.ValidateJWT(token, csrf, false)
 
 		ctx, _ := handleErrDTO(jwtValid, tokenErrDTO, r)
 
@@ -59,8 +63,18 @@ func ValidateOptionalJWT(next http.Handler) (http.Handler) {
 // ----- Private -----
 
 func getAuthTokenAndService(r *http.Request) (string, services.AuthService) {
+	var token string
 	jwt := r.Header.Get("Authorization")
-	token := strings.Replace(jwt, "Bearer ", "", 1)
+
+	// if auth token not in headers, get it from cookies
+	if jwt == "" {
+		authCookie, noCookieErr := r.Cookie("Auth")
+		if noCookieErr == nil {
+			token = authCookie.Value
+		}
+	} else {
+		token = strings.Replace(jwt, "Bearer ", "", 1)
+	}
 
 	service := r.Context().Value("BaseService").(*services.BaseService)
 	authService := services.AuthService{BaseService: service}
