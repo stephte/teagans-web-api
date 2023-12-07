@@ -18,13 +18,6 @@ func RenderErrorJSON(w http.ResponseWriter, r *http.Request, errorDTO dtos.Error
 }
 
 
-func BlankSuccessResponse(w http.ResponseWriter, r *http.Request) {
-	// is there a better way to return just a blank 200 response?
-	w.WriteHeader(200)
-	render.PlainText(w, r, "")
-}
-
-
 func GetRequestPath(r *http.Request) string {
 	url := r.URL.String()
 
