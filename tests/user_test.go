@@ -112,7 +112,7 @@ func TestUserCreate(t *testing.T) {
 	id := body.ID
 
 	dres := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", id), nil)
-	helper.AssertStatus(dres, 200)
+	helper.AssertStatus(dres, 204)
 }
 
 
@@ -171,7 +171,7 @@ func TestValidAdminUserCreate(t *testing.T) {
 	id := body.ID
 
 	dres := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", id), nil)
-	helper.AssertStatus(dres, 200)
+	helper.AssertStatus(dres, 204)
 }
 
 
@@ -531,7 +531,7 @@ func TestDeleteWorksForCurrentUser(t *testing.T) {
 	defer helper.CleanupAuth()
 
 	res := helper.SendAsRegularUser("delete", fmt.Sprintf("/users/%s", helper.RegularUser.ID), nil)
-	helper.AssertStatus(res, 200)
+	helper.AssertStatus(res, 204)
 }
 
 
@@ -553,5 +553,5 @@ func TestDeleteWorksForSuperUser(t *testing.T) {
 	defer helper.CleanupAuth()
 
 	res := helper.SendAsSuperAdmin("delete", fmt.Sprintf("/users/%s", helper.AdminUser.ID), nil)
-	helper.AssertStatus(res, 200)
+	helper.AssertStatus(res, 204)
 }
