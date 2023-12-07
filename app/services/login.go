@@ -66,11 +66,11 @@ func(this LoginService) StartPWReset(dto dtos.EmailDTO) (dtos.ErrorDTO) {
 func(this *LoginService) ConfirmResetToken(dto dtos.ConfirmResetTokenDTO) (dtos.LoginTokenDTO, dtos.ErrorDTO) {
 	findErr := this.setCurrentUserByEmail(dto.Email) 
 	if findErr != nil {
-		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError()
+		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	if !this.currentUser.CheckPWResetToken(dto.Token) {
-		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError()
+		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	tokenExpired := this.currentUser.PasswordResetExpiration < time.Now().Unix()

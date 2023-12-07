@@ -47,3 +47,16 @@ func SetAuthCookie(w http.ResponseWriter, token string, maxAge int64) {
 	}
 	http.SetCookie(w, cookie)
 }
+
+// deletes the Auth cookie from response writer
+func DeleteAuthCookie(w http.ResponseWriter) {
+	cookie := &http.Cookie{
+		Name: "Auth",
+		Value: "",
+		MaxAge: -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+		Path: "/",
+	}
+	http.SetCookie(w, cookie)
+}

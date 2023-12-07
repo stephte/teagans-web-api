@@ -28,7 +28,7 @@ func(this UserService) GetUser(userIdStr string) (dtos.UserDTO, dtos.ErrorDTO) {
 	}
 
 	if !this.validateUserHasAccess(enums.ADMIN) && this.currentUser.ID != this.user.ID {
-		return dtos.UserDTO{}, dtos.AccessDeniedError()
+		return dtos.UserDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	return mappers.MapUserToUserDTO(this.user), dtos.ErrorDTO{}
@@ -37,7 +37,7 @@ func(this UserService) GetUser(userIdStr string) (dtos.UserDTO, dtos.ErrorDTO) {
 
 func (this UserService) GetUsers(dto dtos.PaginationDTO, path string) (dtos.PageResponseDTO, dtos.ErrorDTO) {
 	if !this.validateUserHasAccess(enums.ADMIN) {
-		return dto.GetPageResponse(), dtos.AccessDeniedError()
+		return dto.GetPageResponse(), dtos.AccessDeniedError(false)
 	}
 
 	// first get count of total rows
@@ -113,7 +113,7 @@ func (this UserService) UpdateUser(userIdStr string, data map[string]interface{}
 	}
 
 	if !this.validateUserHasAccess(enums.SUPERADMIN) && (role != this.user.Role || this.currentUser.ID != this.user.ID) {
-		return dtos.UserDTO{}, dtos.AccessDeniedError()
+		return dtos.UserDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	if updateErr := this.db.Model(&this.user).Updates(validatedData).Error; updateErr != nil {
@@ -133,7 +133,7 @@ func (this UserService) UpdateUserOG(userIdStr string, dto dtos.UserDTO) (dtos.U
 
 	// handle validation (only super admins can update Role)
 	if !this.validateUserHasAccess(enums.SUPERADMIN) && (dto.Role != this.user.Role || this.currentUser.ID != this.user.ID) {
-		return dto, dtos.AccessDeniedError()
+		return dto, dtos.AccessDeniedError(false)
 	}
 
 	updatedUser := mappers.MapUserDTOToUser(dto)
@@ -154,7 +154,7 @@ func(this UserService) DeleteUser(userIdStr string) dtos.ErrorDTO {
 	}
 
 	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.user.ID {
-		return dtos.AccessDeniedError()
+		return dtos.AccessDeniedError(false)
 	}
 
 	// Unscoped actually deletes the User, without it it just sets the 'DeletedAt' field

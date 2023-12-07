@@ -9,7 +9,6 @@ import (
 	"net/http"
 )
 
-// TODO: add a middleware that tells us what env we are in
 func Login(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.LoginDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
@@ -30,6 +29,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, tokenDTO)
+}
+
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	http_utils.DeleteAuthCookie(w)
+
+	render.NoContent(w, r)
 }
 
 
