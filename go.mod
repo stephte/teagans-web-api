@@ -8,6 +8,7 @@ require (
 	github.com/go-chi/render v1.0.2
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
+	github.com/kkdai/youtube/v2 v2.9.0
 	github.com/rs/zerolog v1.28.0
 	golang.org/x/crypto v0.5.0
 	gorm.io/driver/postgres v1.4.6
@@ -26,7 +27,6 @@ require (
 	github.com/jackc/pgx/v5 v5.2.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/kkdai/youtube/v2 v2.9.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	golang.org/x/sys v0.12.0 // indirect

@@ -1,7 +1,7 @@
 package http_utils
 
 import (
-	"chi-users-project/app/services/dtos"
+	"youtube-downloader/app/services/dtos"
 	"github.com/go-chi/render"
 	"net/http"
 	"strings"
