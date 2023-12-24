@@ -63,7 +63,7 @@ func InitTestDBAndService(t *testing.T) (TestHelper) {
 		t.Fatalf("Database failed to initialize: %s", err.Error())
 	}
 
-	server := config.SetupRouter(logger, dbConnection.GetDB())
+	server := config.SetupRouter(logger, dbConnection.GetDB(), "test")
 
 	service := services.InitService(logger, dbConnection.GetDB())
 
