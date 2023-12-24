@@ -5,8 +5,8 @@ import (
 	"youtube-downloader/app/services/emails"
 	"youtube-downloader/app/utilities/enums"
 	"youtube-downloader/app/services/dtos"
-	"github.com/google/uuid"
 	"youtube-downloader/app/models"
+	"github.com/google/uuid"
 	"errors"
 )
 

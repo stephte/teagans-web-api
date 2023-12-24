@@ -13,8 +13,8 @@ import (
 
 func ValidateJWT(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token, authService := getAuthTokenAndService(r)
-		csrf := r.Header.Get("CSRF")
+		token, authService := getAuthTokenAndService(r, false)
+		csrf := r.Header.Get("X-CSRF-Token")
 
 		jwtValid, tokenErrDTO := authService.ValidateJWT(token, csrf, false)
 
@@ -31,8 +31,8 @@ func ValidateJWT(next http.Handler) (http.Handler) {
 
 func ValidatePWResetJWT(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token, authService := getAuthTokenAndService(r)
-		csrf := r.Header.Get("CSRF")
+		token, authService := getAuthTokenAndService(r, true)
+		csrf := r.Header.Get("X-CSRF-Token")
 
 		jwtValid, tokenErrDTO := authService.ValidateJWT(token, csrf, true)
 
@@ -49,8 +49,8 @@ func ValidatePWResetJWT(next http.Handler) (http.Handler) {
 
 func ValidateOptionalJWT(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		token, authService := getAuthTokenAndService(r)
-		csrf := r.Header.Get("CSRF")
+		token, authService := getAuthTokenAndService(r, false)
+		csrf := r.Header.Get("X-CSRF-Token")
 
 		jwtValid, tokenErrDTO := authService.ValidateJWT(token, csrf, false)
 
@@ -60,15 +60,32 @@ func ValidateOptionalJWT(next http.Handler) (http.Handler) {
 	})
 }
 
+func AllowLocalHost(next http.Handler) (http.Handler) {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")
+		w.Header().Add("Access-Control-Expose-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")
+    	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    	w.Header().Add("Access-Control-Allow-Credentials", "true")
+
+    	if r.Method == "OPTIONS" {
+	        http.Error(w, "No Content", http.StatusNoContent)
+	        return
+	    }
+
+		next.ServeHTTP(w, r.WithContext(r.Context()))
+	})
+}
+
 // ----- Private -----
 
-func getAuthTokenAndService(r *http.Request) (string, services.AuthService) {
+func getAuthTokenAndService(r *http.Request, pwReset bool) (string, services.AuthService) {
 	var token string
 	jwt := r.Header.Get("Authorization")
 
 	// if auth token not in headers, get it from cookies
 	if jwt == "" {
-		authCookie, noCookieErr := r.Cookie("Auth")
+		authCookie, noCookieErr := http_utils.GetAuthCookie(r, pwReset)
 		if noCookieErr == nil {
 			token = authCookie.Value
 		}

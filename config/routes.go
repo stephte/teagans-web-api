@@ -22,6 +22,7 @@ import (
 type Router struct {
 	Router			*chi.Mux
 	logger			zerolog.Logger
+	env				string
 }
 
 // -------- Routes go here --------
@@ -30,6 +31,11 @@ func(this *Router) defineRoutes() {
 	r := this.Router
 
 	this.logger.Debug().Msg("Setting up routes")
+
+	// allow CORS in dev enviroment
+	if this.env == "dev" {
+		r.Use(middle.AllowLocalHost)
+	}
 
 	r.Get("/", controllers.Index)
 
@@ -59,7 +65,7 @@ func(this *Router) defineRoutes() {
 
 	r.Route("/download", func(r chi.Router) {
 		r.Use(middle.ValidateJWT)	
-		r.Post("/", controllers.DownloadVideo)
+		r.Get("/", controllers.DownloadVideo)
 	})
 }
 
@@ -118,7 +124,7 @@ func(this *Router) StartGracefulServer(baseUrl, port string) {
 }
 
 
-func SetupRouter(logger zerolog.Logger, db *gorm.DB) Router {
+func SetupRouter(logger zerolog.Logger, db *gorm.DB, env string) Router {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
@@ -140,6 +146,7 @@ func SetupRouter(logger zerolog.Logger, db *gorm.DB) Router {
 	Router := Router{
 		Router: r,
 		logger: logger,
+		env: env,
 	}
 
 	Router.defineRoutes()

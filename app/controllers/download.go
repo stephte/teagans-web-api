@@ -4,17 +4,20 @@ import (
 	"youtube-downloader/app/utilities/http_utils"
 	"youtube-downloader/app/services/dtos"
 	"youtube-downloader/app/services"
-	"encoding/json"
 	"net/http"
+	"strconv"
 	"fmt"
 	"io"
 )
 
 func DownloadVideo(w http.ResponseWriter, r *http.Request) {
 	var data dtos.YoutubeDataDTO
-	bindErr := json.NewDecoder(r.Body).Decode(&data)
-	if bindErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+	var dataErr error
+
+	data.Url = r.URL.Query().Get("url")
+	data.AudioOnly, dataErr = strconv.ParseBool(r.URL.Query().Get("audioOnly"))
+	if dataErr != nil {
+		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(dataErr, 400, false))
 		return
 	}
 

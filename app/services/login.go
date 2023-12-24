@@ -63,32 +63,31 @@ func(this LoginService) StartPWReset(dto dtos.EmailDTO) (dtos.ErrorDTO) {
 }
 
 
-func(this *LoginService) ConfirmResetToken(dto dtos.ConfirmResetTokenDTO) (dtos.LoginTokenDTO, dtos.ErrorDTO) {
+func(this *LoginService) ConfirmResetToken(dto dtos.ConfirmResetTokenDTO) (dtos.LoginTokenDTO, int64, dtos.ErrorDTO) {
 	findErr := this.setCurrentUserByEmail(dto.Email) 
 	if findErr != nil {
-		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError(false)
+		return dtos.LoginTokenDTO{}, 0, dtos.AccessDeniedError(false)
 	}
 
 	if !this.currentUser.CheckPWResetToken(dto.Token) {
-		return dtos.LoginTokenDTO{}, dtos.AccessDeniedError(false)
+		return dtos.LoginTokenDTO{}, 0, dtos.CreateErrorDTO(errors.New("Invalid Token"), 401, false)
 	}
 
 	tokenExpired := this.currentUser.PasswordResetExpiration < time.Now().Unix()
 
 	// clear out the User's Reset token
 	if updateErr := this.db.Model(&this.currentUser).Select("PasswordResetToken", "PasswordResetExpiration").Updates(models.User{PasswordResetToken: nil, PasswordResetExpiration: 0}).Error; updateErr != nil {
-		return dtos.LoginTokenDTO{}, dtos.CreateErrorDTO(updateErr, 500, false)
+		return dtos.LoginTokenDTO{}, 0, dtos.CreateErrorDTO(updateErr, 500, false)
 	}
 
 	if tokenExpired {
-		return dtos.LoginTokenDTO{}, dtos.CreateErrorDTO(errors.New("Token expired"), 0, false)
+		return dtos.LoginTokenDTO{}, 0, dtos.CreateErrorDTO(errors.New("Token expired"), 0, false)
 	}
 
 	// create JWT token with PRT set to true, expiration in 1 hour (or less)
-	// TODO: add csrf/maxAge handling (if using cookies for PW reset... which may not do)
-	token, _, _, tokenErrDTO := this.genToken(true)
+	token, csrf, maxAge, tokenErrDTO := this.genToken(true)
 
-	return dtos.LoginTokenDTO{Token: token}, tokenErrDTO
+	return dtos.LoginTokenDTO{Token: token, CSRF: csrf}, maxAge, tokenErrDTO
 }
 
 

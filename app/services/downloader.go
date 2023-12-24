@@ -16,8 +16,12 @@ type DownloaderService struct {
 
 
 func(this DownloaderService) DownloadVideo(data dtos.YoutubeDataDTO) (dtos.DownloadDTO, dtos.ErrorDTO) {
-	// get id from URL:
-	u, err := url.Parse(data.Url)
+	unescapedUrl, escErr := url.QueryUnescape(data.Url)
+	if escErr != nil {
+		return dtos.DownloadDTO{}, dtos.CreateErrorDTO(escErr, 0, false)
+	}
+
+	u, err := url.Parse(unescapedUrl)
 	if err != nil {
 		return dtos.DownloadDTO{}, dtos.CreateErrorDTO(err, 0, false)
 	}
