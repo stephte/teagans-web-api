@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
+	"fmt"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -16,24 +17,27 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
 		return
 	}
-	
+
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.LoginService{BaseService: baseService}
 	tokenDTO, maxAge, errDTO := service.LoginUser(dto, true)
-
-	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge)
-
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.JSON(w, r, tokenDTO)
+	w.Header().Set("Authorization", fmt.Sprintf("Bearer: %s", tokenDTO.Token))
+	w.Header().Set("X-CSRF-Token", tokenDTO.CSRF)
+
+	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge, false)
+
+	// render.JSON(w, r, tokenDTO)
+	render.NoContent(w, r)
 }
 
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	http_utils.DeleteAuthCookie(w)
+	http_utils.DeleteAuthCookie(w, false)
 
 	render.NoContent(w, r)
 }
@@ -51,7 +55,6 @@ func StartPWReset(w http.ResponseWriter, r *http.Request) {
 	service := services.LoginService{BaseService: baseService}
 
 	errDTO := service.StartPWReset(dto)
-
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
 		return
@@ -72,14 +75,18 @@ func ConfirmPasswordResetToken(w http.ResponseWriter, r *http.Request) {
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.LoginService{BaseService: baseService}
 
-	res, errDTO := service.ConfirmResetToken(dto)
-
+	tokenDTO, maxAge, errDTO := service.ConfirmResetToken(dto)
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.JSON(w, r, res)
+	w.Header().Set("Authorization", fmt.Sprintf("Bearer: %s", tokenDTO.Token))
+	w.Header().Set("X-CSRF-Token", tokenDTO.CSRF)
+
+	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge, true)
+
+	render.NoContent(w, r)
 }
 
 
@@ -94,12 +101,15 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.LoginService{BaseService: baseService}
 	tokenDTO, maxAge, errDTO := service.UpdateUserPassword(dto)
-
-	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge)
-
 	if errDTO.Exists() {
 		http_utils.RenderErrorJSON(w, r, errDTO)
 	}
 
-	render.JSON(w, r, tokenDTO)
+	w.Header().Set("Authorization", fmt.Sprintf("Bearer: %s", tokenDTO.Token))
+	w.Header().Set("X-CSRF-Token", tokenDTO.CSRF)
+
+	http_utils.DeleteAuthCookie(w, true)
+	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge, false)
+
+	render.NoContent(w, r)
 }

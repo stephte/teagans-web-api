@@ -5,8 +5,8 @@ import (
 	"chi-users-project/app/services/emails"
 	"chi-users-project/app/utilities/enums"
 	"chi-users-project/app/services/dtos"
-	"github.com/google/uuid"
 	"chi-users-project/app/models"
+	"github.com/google/uuid"
 	"errors"
 )
 

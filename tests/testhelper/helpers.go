@@ -83,7 +83,7 @@ func(this TestHelper) SendAsRegularUser(typ string, urlEnd string, body []byte) 
 	w := httptest.NewRecorder()
 
 	req.Header.Set("Authorization", this.RegularToken)
-	req.Header.Set("csrf", this.RegularCsrf)
+	req.Header.Set("X-CSRF-Token", this.RegularCsrf)
 
 	this.server.Router.ServeHTTP(w, req)
 
@@ -100,7 +100,7 @@ func(this TestHelper) SendAsAdmin(typ string, urlEnd string, body []byte) *http.
 	w := httptest.NewRecorder()
 
 	req.Header.Set("Authorization", this.AdminToken)
-	req.Header.Set("csrf", this.AdminCsrf)
+	req.Header.Set("X-CSRF-Token", this.AdminCsrf)
 
 	this.server.Router.ServeHTTP(w, req)
 
@@ -117,7 +117,7 @@ func(this TestHelper) SendAsSuperAdmin(typ string, urlEnd string, body []byte) *
 	w := httptest.NewRecorder()
 
 	req.Header.Set("Authorization", this.SuperAdminToken)
-	req.Header.Set("csrf", this.SuperAdminCsrf)
+	req.Header.Set("X-CSRF-Token", this.SuperAdminCsrf)
 
 	this.server.Router.ServeHTTP(w, req)
 

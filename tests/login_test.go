@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"chi-users-project/app/services/dtos"
 	"chi-users-project/tests/testhelper"
 	"encoding/json"
 	"testing"
@@ -29,16 +28,14 @@ func TestValidLogin(t *testing.T) {
 
 	res := testHelper.SendAsNoOne("post", "/auth/login", reqData)
 	
-	data := testHelper.GetResponseBody(res)
-	testHelper.AssertStatus(res, 200)
+	testHelper.AssertStatus(res, 204)
 
-	var tokenDTO dtos.LoginTokenDTO
-	jsonErr = json.Unmarshal(data, &tokenDTO)
-	if jsonErr != nil {
-		t.Errorf("expected error to be nil got %v", jsonErr)
-	}
+	jwt := res.Header.Get("Authorization")
+	csrf := res.Header.Get("X-CSRF-Token")
 
-	splitJWT := strings.Split(tokenDTO.Token, ".")
+	testHelper.Assert(csrf != "", "")
+
+	splitJWT := strings.Split(jwt, ".")
 	testHelper.Assert(len(splitJWT) == 3, "")
 }
 

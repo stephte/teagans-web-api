@@ -28,12 +28,12 @@ func GetRequestPath(r *http.Request) string {
 }
 
 // sets the Auth cookie on response writer
-func SetAuthCookie(w http.ResponseWriter, token string, maxAge int64) {
+func SetAuthCookie(w http.ResponseWriter, token string, maxAge int64, pwReset bool) {
 	cookie := &http.Cookie{
-		Name: "Auth",
+		Name: getAuthCookieName(pwReset),
 		Value: token,
 		MaxAge: int(maxAge),
-		Secure: true,
+		// Secure: true, // figure out how to use https for localhost
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		Path: "/",
@@ -42,14 +42,26 @@ func SetAuthCookie(w http.ResponseWriter, token string, maxAge int64) {
 }
 
 // deletes the Auth cookie from response writer
-func DeleteAuthCookie(w http.ResponseWriter) {
+func DeleteAuthCookie(w http.ResponseWriter, pwReset bool) {
 	cookie := &http.Cookie{
-		Name: "Auth",
+		Name: getAuthCookieName(pwReset),
 		Value: "",
 		MaxAge: -1,
 		HttpOnly: true,
+		// Secure: true, // figure out how to use https for localhost
 		SameSite: http.SameSiteStrictMode,
 		Path: "/",
 	}
 	http.SetCookie(w, cookie)
+}
+
+func GetAuthCookie(r *http.Request, pwReset bool) (*http.Cookie, error) {
+	return r.Cookie(getAuthCookieName(pwReset))
+}
+
+func getAuthCookieName(pwReset bool) string {
+	if pwReset {
+		return "chi-users-app-reset"
+	}
+	return "chi-users-app-auth"
 }

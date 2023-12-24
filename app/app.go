@@ -42,7 +42,7 @@ func main() {
 	}
 	defer dbConnection.CoolDown()
 
-	router := config.SetupRouter(logger, dbConnection.GetDB())
+	router := config.SetupRouter(logger, dbConnection.GetDB(), runmode)
 
 	router.StartGracefulServer(os.Getenv("CHI_BASE_URL"), os.Getenv("CHI_PORT"))
 }
