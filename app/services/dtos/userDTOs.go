@@ -37,6 +37,8 @@ func ValidateUserMap(data map[string]interface{}) (map[string]interface{}, error
 		// ensure they can't manipulate BaseDTO data
 		if strings.Contains(capitalKey, "BaseDTO") {
 			return rv, errors.New(fmt.Sprintf("Unpermitted data: %s", key))
+		} else if strings.Contains(strings.ToLower(key), "id") {
+			continue
 		}
 
 		typ := utilities.GetType(value)

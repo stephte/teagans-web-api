@@ -65,7 +65,7 @@ func AllowLocalHost(next http.Handler) (http.Handler) {
 		w.Header().Add("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")
 		w.Header().Add("Access-Control-Expose-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")
-    	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+    	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PATCH, DELETE")
     	w.Header().Add("Access-Control-Allow-Credentials", "true")
 
     	if r.Method == "OPTIONS" {
