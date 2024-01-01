@@ -153,7 +153,7 @@ func(this UserService) DeleteUser(userIdStr string) dtos.ErrorDTO {
 		return dtos.CreateErrorDTO(err, 0, false)
 	}
 
-	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.user.ID {
+	if !this.validateUserHasAccess(enums.SUPERADMIN) && !(this.validateUserHasAccess(enums.ADMIN) && this.user.Role == enums.REGULAR) && this.currentUser.ID != this.user.ID {
 		return dtos.AccessDeniedError(false)
 	}
 
