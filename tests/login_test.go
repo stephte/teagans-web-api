@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"youtube-downloader/app/services/dtos"
 	"youtube-downloader/tests/testhelper"
 	"encoding/json"
 	"testing"

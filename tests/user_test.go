@@ -322,7 +322,7 @@ func  TestSuperAdminCanUpdateRole(t *testing.T) {
 }
 
 
-func  TestAdminCanNotUpdateRole(t *testing.T) {
+func TestAdminCanUpdateRegularUserToAdmin(t *testing.T) {
 	helper := testhelper.InitTestDBAndService(t)
 	helper.InitAuth()
 	defer helper.CleanupAuth()
@@ -338,6 +338,74 @@ func  TestAdminCanNotUpdateRole(t *testing.T) {
 	}
 
 	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
+	helper.AssertStatus(res, 200)
+
+	body := helper.GetUserDTO(res)
+	helper.Assert(body.Email == helper.RegularUser.Email, "Email should stay the same")
+	helper.Assert(body.Role == 2, "Role should be updated")
+	helper.Assert(body.FirstName == "Test", "Firstname should be updated")
+	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should stay the same")
+}
+
+
+func  TestAdminCanNotUpdateRoleAboveThemselves(t *testing.T) {
+	helper := testhelper.InitTestDBAndService(t)
+	helper.InitAuth()
+	defer helper.CleanupAuth()
+
+	data := map[string]interface{}{
+		"firstName": "Test",
+		"role": 3,
+	}
+
+	reqData, jsonErr := json.Marshal(data)
+	if jsonErr != nil {
+		t.Fatal(jsonErr.Error())
+	}
+
+	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
+
+	helper.AssertStatus(res, 401)
+	helper.AssertErrDTOPresent(res)
+}
+
+
+func  TestAdminCanNotUpdateSuperAdmin(t *testing.T) {
+	helper := testhelper.InitTestDBAndService(t)
+	helper.InitAuth()
+	defer helper.CleanupAuth()
+
+	data := map[string]interface{}{
+		"firstName": "Test",
+	}
+
+	reqData, jsonErr := json.Marshal(data)
+	if jsonErr != nil {
+		t.Fatal(jsonErr.Error())
+	}
+
+	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.SuperAdminUser.ID), reqData)
+
+	helper.AssertStatus(res, 401)
+	helper.AssertErrDTOPresent(res)
+}
+
+
+func  TestAdminCanNotRaiseOwnRole(t *testing.T) {
+	helper := testhelper.InitTestDBAndService(t)
+	helper.InitAuth()
+	defer helper.CleanupAuth()
+
+	data := map[string]interface{}{
+		"role": 3,
+	}
+
+	reqData, jsonErr := json.Marshal(data)
+	if jsonErr != nil {
+		t.Fatal(jsonErr.Error())
+	}
+
+	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.AdminUser.ID), reqData)
 
 	helper.AssertStatus(res, 401)
 	helper.AssertErrDTOPresent(res)

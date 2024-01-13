@@ -2,3 +2,4 @@ tmp/
 target/
 .envdir/
 .env
+.testenv
