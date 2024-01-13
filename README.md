@@ -4,7 +4,7 @@
 
 - requires go 1.18 and a running postgres server
 
-- update .env fields with appropriate data
+- copy ".template.env" into ".env" and update it with appropriate data
 
 # Run App:
 
