@@ -112,7 +112,7 @@ func (this UserService) UpdateUser(userIdStr string, data map[string]interface{}
 		role = this.user.Role
 	}
 
-	if !this.validateUserHasAccess(enums.SUPERADMIN) && !(this.validateUserHasAccess(enums.ADMIN) && this.user.Role == enums.REGULAR) && (role != this.user.Role || this.currentUser.ID != this.user.ID) {
+	if !((this.validateUserHasAccess(enums.ADMIN) && this.currentUser.Role >= role && (this.validateUserHasAccess(enums.SUPERADMIN) || this.user.Role < enums.ADMIN)) || (role == this.user.Role && this.currentUser.ID == this.user.ID)) {
 		return dtos.UserDTO{}, dtos.AccessDeniedError(false)
 	}
 
