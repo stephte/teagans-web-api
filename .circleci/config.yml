@@ -10,13 +10,13 @@ jobs:
     # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
     # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: cimg/go:1.18
+      - image: cimg/go:1.21
         environment:
           CHI_YT_DBHOST: 127.0.0.1
           CHI_YT_DBUSER: test
           CHI_YT_DBPASSWORD:
           CHI_YT_DBNAME: yttest
-          CHI_YT_DBPORT: 5432
+          CHI_YT_DBPORT: 5433
       - image: cimg/postgres:14.3
         environment:
           POSTGRES_USER: test
