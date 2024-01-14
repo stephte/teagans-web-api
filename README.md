@@ -1,4 +1,4 @@
-### go-chi Users App
+### Teagan's YouTube downloader App
 
 # Setup
 
