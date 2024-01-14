@@ -28,7 +28,7 @@ func main() {
 
 	fmt.Printf("\n ----- Running app in *%s* mode -----\n\n", runmode)
 	
-	envErr := godotenv.Load(fmt.Sprintf(".env/%s.env", runmode))
+	envErr := godotenv.Load("./.env")
 	if envErr != nil {
 		logger.Fatal().Err(envErr).Msg("")
 		return

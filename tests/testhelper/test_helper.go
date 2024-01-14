@@ -40,7 +40,7 @@ func InitTestDBAndService(t *testing.T) (TestHelper) {
 	fmt.Print("\n")
 	logger := httplog.NewLogger("chi-users-project-tests", httplog.Options{ JSON: true })
 
-	envErr := godotenv.Load("../.env/test.env")
+	envErr := godotenv.Load("../.testenv")
 	if envErr != nil {
 		t.Fatalf("Test environment failed to load: %s", envErr.Error())
 	}
