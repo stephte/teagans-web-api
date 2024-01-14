@@ -33,7 +33,7 @@ func SetAuthCookie(w http.ResponseWriter, token string, maxAge int64, pwReset bo
 		Name: getAuthCookieName(pwReset),
 		Value: token,
 		MaxAge: int(maxAge),
-		// Secure: true, // figure out how to use https for localhost
+		Secure: true, // figure out how to use https for localhost
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
 		Path: "/",
@@ -48,7 +48,7 @@ func DeleteAuthCookie(w http.ResponseWriter, pwReset bool) {
 		Value: "",
 		MaxAge: -1,
 		HttpOnly: true,
-		// Secure: true, // figure out how to use https for localhost
+		Secure: true, // figure out how to use https for localhost
 		SameSite: http.SameSiteStrictMode,
 		Path: "/",
 	}
