@@ -16,7 +16,7 @@ jobs:
           CHI_YT_DBUSER: test
           CHI_YT_DBPASSWORD:
           CHI_YT_DBNAME: yttest
-          CHI_YT_DBPORT: 5433
+          CHI_YT_DBPORT: 5432
       - image: cimg/postgres:14.3
         environment:
           POSTGRES_USER: test
