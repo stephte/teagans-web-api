@@ -11,6 +11,11 @@
     go run app/app.go
 
 # Run tests:
+- first, set up new postgres DB for testing
+
+- copy .template.env into .testenv, fill with appropriate DB data (omit email SMTP data)
+
+## Then run:
 
     cd tests
     go test -v
