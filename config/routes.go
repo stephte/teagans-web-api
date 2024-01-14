@@ -32,10 +32,8 @@ func(this *Router) defineRoutes() {
 
 	this.logger.Debug().Msg("Setting up routes")
 
-	// allow CORS in dev enviroment
-	if this.env == "dev" {
-		r.Use(middle.AllowLocalHost)
-	}
+	// uses CHI_WEBAPP_ORIGIN to allow requests from given origin
+	r.Use(middle.SetCORS)
 
 	r.Get("/", controllers.Index)
 

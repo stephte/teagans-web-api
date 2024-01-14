@@ -4,10 +4,12 @@ import (
 	"chi-users-project/app/utilities/http_utils"
 	"chi-users-project/app/services/dtos"
 	"chi-users-project/app/services"
+	"github.com/go-chi/render"
 	"net/http"
 	"context"
 	"strings"
 	"errors"
+	"os"
 )
 
 
@@ -60,16 +62,16 @@ func ValidateOptionalJWT(next http.Handler) (http.Handler) {
 	})
 }
 
-func AllowLocalHost(next http.Handler) (http.Handler) {
+func SetCORS(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		w.Header().Add("Access-Control-Allow-Origin", os.Getenv("CHI_YT_WEBAPP_ORIGIN"))
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")
 		w.Header().Add("Access-Control-Expose-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")
     	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PATCH, DELETE")
     	w.Header().Add("Access-Control-Allow-Credentials", "true")
 
     	if r.Method == "OPTIONS" {
-	        http.Error(w, "No Content", http.StatusNoContent)
+	        render.NoContent(w, r)
 	        return
 	    }
 
