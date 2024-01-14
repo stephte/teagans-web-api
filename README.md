@@ -15,7 +15,7 @@
 
 - copy .template.env into .testenv, fill with appropriate DB data (omit email SMTP data)
 
-## Then run:
+### Then run:
 
     cd tests
     go test -v
