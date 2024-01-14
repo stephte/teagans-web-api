@@ -9,7 +9,6 @@ import (
 	"context"
 	"strings"
 	"errors"
-	"fmt"
 	"os"
 )
 
@@ -89,8 +88,6 @@ func getAuthTokenAndService(r *http.Request, pwReset bool) (string, services.Aut
 	// if auth token not in headers, get it from cookies
 	if jwt == "" {
 		authCookie, noCookieErr := http_utils.GetAuthCookie(r, pwReset)
-		fmt.Println("authCookie")
-		fmt.Println(authCookie)
 		if noCookieErr == nil {
 			token = authCookie.Value
 		}
