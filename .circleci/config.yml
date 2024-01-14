@@ -37,7 +37,7 @@ jobs:
             - "/go/pkg/mod"
       - run:
           command: |
-            touch .env/test.env
+            touch .testenv
       - run:
           name: Run tests
           command: |
