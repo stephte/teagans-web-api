@@ -62,7 +62,7 @@ func ValidateOptionalJWT(next http.Handler) (http.Handler) {
 	})
 }
 
-func AllowCORS(next http.Handler) (http.Handler) {
+func SetCORS(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Access-Control-Allow-Origin", os.Getenv("CHI_YT_WEBAPP_ORIGIN"))
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")

@@ -33,7 +33,7 @@ func(this *Router) defineRoutes() {
 	this.logger.Debug().Msg("Setting up routes")
 
 	// uses CHI_YT_WEBAPP_ORIGIN to allow requests from given origin
-	r.Use(middle.AllowCORS)
+	r.Use(middle.SetCORS)
 
 	r.Get("/", controllers.Index)
 
