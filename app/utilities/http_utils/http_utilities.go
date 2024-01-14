@@ -39,6 +39,18 @@ func SetAuthCookie(w http.ResponseWriter, token string, maxAge int64, pwReset bo
 		Path: "/",
 	}
 	http.SetCookie(w, cookie)
+
+	cookie2 := &http.Cookie{
+		Name: "auth-cookie",
+		Value: "abc123",
+		MaxAge: int(maxAge),
+		// Secure: true, // figure out how to use https for localhost
+		// HttpOnly: true,
+		// SameSite: http.SameSiteStrictMode,
+		Path: "/",
+	}
+
+	http.SetCookie(w, cookie2)
 }
 
 // deletes the Auth cookie from response writer
