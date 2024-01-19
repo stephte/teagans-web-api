@@ -137,7 +137,7 @@ func(this *User) beforeSaveWithModel(data User, tx *gorm.DB) error {
 
 func(this *User) handlePassword() error {
 	if !auth.ValidatePassword(this.Password) {
-		return errors.New("Password invalid")
+		return errors.New("Password must be at least 8 characters")
 	}
 
 	if auth.CompareStringWithHash(this.EncryptedPassword, this.Password) {
