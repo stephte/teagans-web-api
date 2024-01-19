@@ -26,12 +26,16 @@ func(this DownloaderService) DownloadVideo(data dtos.YoutubeDataDTO) (dtos.Downl
 		return dtos.DownloadDTO{}, dtos.CreateErrorDTO(err, 0, false)
 	}
 
-	if !strings.Contains(u.Hostname(), "youtube.com") {
+	qmap := u.Query()
+	var video_id string
+	if strings.Contains(u.Hostname(), "youtube.com") {
+		video_id = qmap.Get("v")
+	} else if strings.Contains(u.Hostname(), "youtu.be") {
+		video_id = strings.Replace(u.Path, "/", "", 1)
+	} else {
 		return dtos.DownloadDTO{}, dtos.CreateErrorDTO(errors.New("must be a youtube url"), 0, false)
 	}
 
-	qmap := u.Query()
-	video_id := qmap.Get("v")
 	if video_id == "" {
 		return dtos.DownloadDTO{}, dtos.CreateErrorDTO(errors.New("Video ID not found"), 0, false)
 	}
