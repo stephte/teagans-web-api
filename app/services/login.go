@@ -6,6 +6,7 @@ import (
 	"youtube-downloader/app/utilities/auth"
 	"youtube-downloader/app/services/dtos"
 	"youtube-downloader/app/models"
+	"strings"
 	"errors"
 	"time"
 )
@@ -21,7 +22,7 @@ func(this *LoginService) LoginUser(credentials dtos.LoginDTO, killTime bool) (dt
 		auth.KillSomeTime(967, 2978)
 	}
 
-	findErr := this.setCurrentUserByEmail(credentials.Email)
+	findErr := this.setCurrentUserByEmail(strings.ToLower(credentials.Email))
 	if findErr != nil {
 		return dtos.LoginTokenDTO{}, 0, dtos.CreateErrorDTO(errors.New("Email or Password Incorrect"), 401, false)
 	}
