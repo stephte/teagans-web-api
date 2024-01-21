@@ -156,7 +156,7 @@ func(this LoginService) sendPWResetToken(token string, email string) error {
 		Token: token,
 	}
 	request.SetToEmails([]string{email})
-	request.SetSubject("YouTube Downloader App Password Reset")
+	request.SetSubject("Teagan's WebApp Password Reset")
 
 	// generate html for email
 	err := request.GenerateAndSetMessage()

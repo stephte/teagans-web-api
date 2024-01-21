@@ -194,7 +194,7 @@ func(this UserService) sendSignupEmail(email, firstName string) error {
 	}
 
 	request.SetToEmails([]string{email})
-	request.SetSubject("YouTube Downloader App Signup Confirmation")
+	request.SetSubject("Teagan's WebApp Signup Confirmation")
 
 	// generate html for email
 	err := request.GenerateAndSetMessage()
