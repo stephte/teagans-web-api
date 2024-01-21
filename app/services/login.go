@@ -39,6 +39,8 @@ func(this *LoginService) LoginUser(credentials dtos.LoginDTO, killTime bool) (dt
 
 
 func(this LoginService) StartPWReset(dto dtos.EmailDTO) (dtos.ErrorDTO) {
+	auth.KillSomeTime(824, 1891)
+
 	findErr := this.setCurrentUserByEmail(dto.Email)
 	if findErr != nil {
 		return dtos.ErrorDTO{}
@@ -65,6 +67,8 @@ func(this LoginService) StartPWReset(dto dtos.EmailDTO) (dtos.ErrorDTO) {
 
 
 func(this *LoginService) ConfirmResetToken(dto dtos.ConfirmResetTokenDTO) (dtos.LoginTokenDTO, int64, dtos.ErrorDTO) {
+	auth.KillSomeTime(777, 1492)
+
 	findErr := this.setCurrentUserByEmail(dto.Email) 
 	if findErr != nil {
 		return dtos.LoginTokenDTO{}, 0, dtos.AccessDeniedError(false)
@@ -93,6 +97,8 @@ func(this *LoginService) ConfirmResetToken(dto dtos.ConfirmResetTokenDTO) (dtos.
 
 
 func(this LoginService) UpdateUserPassword(dto dtos.ResetPWDTO) (dtos.LoginTokenDTO, int64, dtos.ErrorDTO) {
+	auth.KillSomeTime(939, 2250)
+
 	this.currentUser.Password = dto.Password
 	if saveErr := this.db.Save(&this.currentUser).Error; saveErr != nil {
 		this.log.Error().Msg(saveErr.Error())
