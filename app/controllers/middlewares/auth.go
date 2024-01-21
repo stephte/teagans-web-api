@@ -66,7 +66,7 @@ func SetCORS(next http.Handler) (http.Handler) {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Access-Control-Allow-Origin", os.Getenv("CHI_YT_WEBAPP_ORIGIN"))
 		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")
-		w.Header().Add("Access-Control-Expose-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With")
+		w.Header().Add("Access-Control-Expose-Headers", "Content-Type, Content-Disposition, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, Accept, Origin, Cache-Control, X-Requested-With, Expires")
     	w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PATCH, DELETE")
     	w.Header().Add("Access-Control-Allow-Credentials", "true")
 
