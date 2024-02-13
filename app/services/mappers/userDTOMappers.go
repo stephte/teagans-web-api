@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"youtube-downloader/app/services/dtos"
-	"youtube-downloader/app/models"
+	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/models"
 )
 
 func MapCreateUserDTOToUser(dto dtos.CreateUserDTO) models.User {

@@ -1,9 +1,9 @@
 package middlewares
 
 import (
-	"youtube-downloader/app/utilities/http_utils"
-	"youtube-downloader/app/services/dtos"
-	"youtube-downloader/app/services"
+	"teagans-web-api/app/utilities/http_utils"
+	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/services"
 	"github.com/go-chi/render"
 	"net/http"
 	"context"

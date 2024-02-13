@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"youtube-downloader/app/utilities/http_utils"
-	"youtube-downloader/app/services/dtos"
+	"teagans-web-api/app/utilities/http_utils"
+	"teagans-web-api/app/services/dtos"
 	"net/http"
 	"strconv"
 	"context"
