@@ -1,11 +1,11 @@
 package testhelper
 
 import (
-	"youtube-downloader/app/services/dtos"
-	"youtube-downloader/app/services"
-	"youtube-downloader/app/models"
+	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/services"
+	"teagans-web-api/app/models"
 	"github.com/go-chi/httplog"
-	"youtube-downloader/config"
+	"teagans-web-api/config"
 	"github.com/joho/godotenv"
 	"testing"
 	"strconv"
@@ -38,7 +38,7 @@ type TestHelper struct {
 
 func InitTestDBAndService(t *testing.T) (TestHelper) {
 	fmt.Print("\n")
-	logger := httplog.NewLogger("youtube-downloader-tests", httplog.Options{ JSON: true })
+	logger := httplog.NewLogger("teagans-web-api-tests", httplog.Options{ JSON: true })
 
 	envErr := godotenv.Load("../.testenv")
 	if envErr != nil {

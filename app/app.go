@@ -1,7 +1,7 @@
 package main
 
 import (
-	"youtube-downloader/config"
+	"teagans-web-api/config"
 	"github.com/go-chi/httplog"
 	"github.com/joho/godotenv"
 	"github.com/rs/zerolog"
@@ -13,7 +13,7 @@ import (
 
 
 func main() {
-	logger := httplog.NewLogger("youtube-downloader", httplog.Options{
+	logger := httplog.NewLogger("teagans-web-api", httplog.Options{
     JSON: true,
   })
 

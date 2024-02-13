@@ -1,10 +1,10 @@
 package config
 
 import (
-	middle "youtube-downloader/app/controllers/middlewares"
+	middle "teagans-web-api/app/controllers/middlewares"
 	"github.com/go-chi/chi/v5/middleware"
-	"youtube-downloader/app/controllers"
-	"youtube-downloader/app/services"
+	"teagans-web-api/app/controllers"
+	"teagans-web-api/app/services"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/rs/zerolog"

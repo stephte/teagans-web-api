@@ -1,8 +1,8 @@
 package services
 
 import (
-	"youtube-downloader/app/utilities/enums"
-	"youtube-downloader/app/models"
+	"teagans-web-api/app/utilities/enums"
+	"teagans-web-api/app/models"
 	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"

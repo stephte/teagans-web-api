@@ -1,7 +1,7 @@
 package testhelper
 
 import (
-	"youtube-downloader/app/services/dtos"
+	"teagans-web-api/app/services/dtos"
 	"net/http/httptest"
 	"encoding/json"
 	"path/filepath"

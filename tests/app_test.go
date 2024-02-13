@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"youtube-downloader/tests/testhelper"
+	"teagans-web-api/tests/testhelper"
 	"testing"
 )
 

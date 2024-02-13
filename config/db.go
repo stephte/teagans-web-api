@@ -1,7 +1,7 @@
 package config
 
 import (
-	"youtube-downloader/app/models"
+	"teagans-web-api/app/models"
 	"gorm.io/driver/postgres"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
