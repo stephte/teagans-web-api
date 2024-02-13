@@ -1,9 +1,9 @@
 package models
 
 import (
-	"youtube-downloader/app/utilities/enums"
-	"youtube-downloader/app/utilities/auth"
-	"youtube-downloader/app/utilities"
+	"teagans-web-api/app/utilities/enums"
+	"teagans-web-api/app/utilities/auth"
+	"teagans-web-api/app/utilities"
 	"gorm.io/gorm"
 	"strings"
 	"errors"

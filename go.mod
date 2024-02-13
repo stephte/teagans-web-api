@@ -1,4 +1,4 @@
-module youtube-downloader
+module teagans-web-api
 
 go 1.21
 

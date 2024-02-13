@@ -1,7 +1,7 @@
 package models
 
 import (
-	"youtube-downloader/app/utilities/uuid"
+	"teagans-web-api/app/utilities/uuid"
 	"gorm.io/gorm"
 	"time"
 )

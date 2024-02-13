@@ -1,11 +1,11 @@
 package services
 
 import (
-	"youtube-downloader/app/services/emails"
-	"youtube-downloader/app/utilities/uuid"
-	"youtube-downloader/app/utilities/auth"
-	"youtube-downloader/app/services/dtos"
-	"youtube-downloader/app/models"
+	"teagans-web-api/app/services/emails"
+	"teagans-web-api/app/utilities/uuid"
+	"teagans-web-api/app/utilities/auth"
+	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/models"
 	"strings"
 	"errors"
 	"time"
@@ -125,7 +125,7 @@ func(this LoginService) genToken(pwReset bool) (string, string, int64, dtos.Erro
 
 	payload := dtos.JWTPayloadDTO{
 		ID: this.currentUser.ID.String(),
-		Issuer: "youtube-downloader-api",
+		Issuer: "teagans-web-api",
 		CreatedAt: time.Now().Unix(),
 		CSRF: csrf,
 	}

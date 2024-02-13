@@ -1,7 +1,7 @@
 package dtos
 
 import (
-	"youtube-downloader/app/utilities/uuid"
+	"teagans-web-api/app/utilities/uuid"
 )
 
 type BaseDTO struct {

@@ -1,7 +1,7 @@
 package emails
 
 import (
-	"youtube-downloader/app/utilities"
+	"teagans-web-api/app/utilities"
 	"net/smtp"
 	"errors"
 	"bytes"

@@ -1,8 +1,8 @@
 package dtos
 
 import (
-	"youtube-downloader/app/utilities/enums"
-	"youtube-downloader/app/utilities"
+	"teagans-web-api/app/utilities/enums"
+	"teagans-web-api/app/utilities"
 	"strings"
 	"errors"
 	"fmt"

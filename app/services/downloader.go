@@ -1,8 +1,8 @@
 package services
 
 import (
-	"youtube-downloader/app/services/dtos"
-	"youtube-downloader/app/utilities"
+	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/utilities"
 	"github.com/kkdai/youtube/v2"
 	"net/url"
 	"strings"

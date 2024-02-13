@@ -1,11 +1,11 @@
 package services
 
 import (
-	"youtube-downloader/app/services/mappers"
-	"youtube-downloader/app/services/emails"
-	"youtube-downloader/app/utilities/enums"
-	"youtube-downloader/app/services/dtos"
-	"youtube-downloader/app/models"
+	"teagans-web-api/app/services/mappers"
+	"teagans-web-api/app/services/emails"
+	"teagans-web-api/app/utilities/enums"
+	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/models"
 	"github.com/google/uuid"
 	"errors"
 )
