@@ -166,6 +166,11 @@ func(this UserService) DeleteUser(userIdStr string) dtos.ErrorDTO {
 }
 
 
+func(this UserService) GetUserTaskCategories(userIdStr string) (dtos.TaskCategoryListDTO dtos.ErrorDTO) {
+	return dtos.TaskCategoryListDTO{}, dtos.ErrorDTO{}
+}
+
+
 // ---------- Private ---------
 
 

@@ -135,3 +135,19 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	render.NoContent(w, r)
 }
+
+
+func UserTaskCategories(w http.ResponseWriter, r *http.Request) {
+	userIdStr := chi.URLParam(r, "userId")
+
+	baseService := r.Context().Value("BaseService").(*services.BaseService)
+	service := services.UserService{BaseService: baseService}
+
+	categories, errDTO := service.GetUserTaskCategories(userIdStr)
+	if categories.Exists() {
+		http_utils.RenderErrorJSON(w, r, errDTO)
+		return
+	}
+
+	render.JSON(w, r, categories)
+}

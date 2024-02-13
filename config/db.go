@@ -93,6 +93,8 @@ func(this *DBConn) migrate() {
 	// add DB table models here
 	this.db.AutoMigrate(
 		&models.User{},
+		&models.TaskCategory{},
+		&models.Task{},
 	)
 }
 
