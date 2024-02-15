@@ -1,8 +1,8 @@
 package services
 
 import (
+	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/services/dtos"
-	"github.com/google/uuid"
 	"encoding/base64"
 	"encoding/json"
 	"crypto/sha256"

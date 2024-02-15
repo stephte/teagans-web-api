@@ -2,8 +2,8 @@ package services
 
 import (
 	"teagans-web-api/app/utilities/enums"
+	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/models"
-	"github.com/google/uuid"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
 	"fmt"

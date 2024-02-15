@@ -61,7 +61,7 @@ func GetAuthCookie(r *http.Request, pwReset bool) (*http.Cookie, error) {
 
 func getAuthCookieName(pwReset bool) string {
 	if pwReset {
-		return "yt-downloader-reset"
+		return "teagans-app-reset"
 	}
-	return "yt-downloader-auth"
+	return "teagans-app-auth"
 }

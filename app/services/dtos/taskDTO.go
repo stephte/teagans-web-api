@@ -14,6 +14,7 @@ type TaskDTO struct {
 	Priority			string				`json:"priority"`
 	Effort				int64				`json:"effort"`
 	Cleared				bool				`json:"cleared"`
+	// TaskNumber			int64				`json:"taskNumber"`
 }
 
 type TaskListDTO struct {

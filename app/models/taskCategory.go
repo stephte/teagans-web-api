@@ -10,8 +10,8 @@ type TaskCategory struct {
 	UserID		uuid.UUID	`gorm:"type:uuid;"`
 
 	User		User
-	Tasks		[]Task
+	Tasks		[]Task		`gorm:"constraint:OnDelete:CASCADE;"`
 
-	Name		string
+	Name		string		`gorm:"default:null;not null;"`
 	Position	int64		`gorm:"default:1;"`
 }

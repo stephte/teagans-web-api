@@ -4,9 +4,9 @@ import (
 	"teagans-web-api/app/services/mappers"
 	"teagans-web-api/app/services/emails"
 	"teagans-web-api/app/utilities/enums"
+	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/models"
-	"github.com/google/uuid"
 	"errors"
 )
 
@@ -181,10 +181,7 @@ func(this UserService) GetUserTaskCategories(userIdStr string) (dtos.TaskCategor
 	}
 
 	var categories []models.TaskCategory
-	this.db.Model(&this.user).Order("priority asc").Association("TaskCategories").Find(&categories)
-	// if findErr != nil {
-	// 	return dtos.TaskCategoryListDTO{}, dtos.CreateErrorDTO(findErr, 0, false)
-	// }
+	this.db.Model(&this.user).Order("position asc").Association("TaskCategories").Find(&categories)
 
 	rv := dtos.TaskCategoryListDTO{
 		TaskCategories: mappers.MapTaskCategoriesToTaskCategoryDTOs(categories),

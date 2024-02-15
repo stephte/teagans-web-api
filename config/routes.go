@@ -58,12 +58,20 @@ func(this *Router) defineRoutes() {
 			r.Patch("/", controllers.UpdateUser)
 			r.Put("/", controllers.UpdateUserOG)
 			r.Delete("/", controllers.DeleteUser)
+
+			r.Get("/task-categories", controllers.GetUserTaskCategories)
 		})
 	})
 
 	r.Route("/download", func(r chi.Router) {
 		r.Use(middle.ValidateJWT)	
 		r.Get("/", controllers.DownloadVideo)
+	})
+
+	r.Route("/task-categories", func(r chi.Router) {
+		r.Use(middle.ValidateJWT)
+
+		r.Post("/", controllers.CreateTaskCategory)
 	})
 }
 
