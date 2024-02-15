@@ -100,7 +100,7 @@ func TestUserCreate(t *testing.T) {
 
 	res := helper.SendAsNoOne("post", "/users", reqData)
 
-	helper.AssertStatus(res, 200)
+	helper.AssertStatus(res, 201)
 
 	body := helper.GetUserDTO(res)
 	helper.Assert(body.FirstName == "Testy", "Firstname value incorrect")
@@ -159,7 +159,7 @@ func TestValidAdminUserCreate(t *testing.T) {
 
 	res := helper.SendAsSuperAdmin("post", "/users", reqData)
 
-	helper.AssertStatus(res, 200)
+	helper.AssertStatus(res, 201)
 
 	body := helper.GetUserDTO(res)
 	helper.Assert(body.FirstName == "Testy", "Firstname value incorrect")
