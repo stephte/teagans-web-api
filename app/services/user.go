@@ -166,8 +166,31 @@ func(this UserService) DeleteUser(userIdStr string) dtos.ErrorDTO {
 }
 
 
-func(this UserService) GetUserTaskCategories(userIdStr string) (dtos.TaskCategoryListDTO dtos.ErrorDTO) {
-	return dtos.TaskCategoryListDTO{}, dtos.ErrorDTO{}
+func(this UserService) GetUserTaskCategories(userIdStr string) (dtos.TaskCategoryListDTO, dtos.ErrorDTO) {
+	if userIdStr == "current" {
+		this.user = this.currentUser
+	} else {
+		err := this.setUser(userIdStr)
+		if err != nil {
+			return dtos.TaskCategoryListDTO{}, dtos.CreateErrorDTO(err, 0, false)
+		}
+	}
+
+	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.user.ID {
+		return dtos.TaskCategoryListDTO{}, dtos.AccessDeniedError(false)
+	}
+
+	var categories []models.TaskCategory
+	this.db.Model(&this.user).Order("priority asc").Association("TaskCategories").Find(&categories)
+	// if findErr != nil {
+	// 	return dtos.TaskCategoryListDTO{}, dtos.CreateErrorDTO(findErr, 0, false)
+	// }
+
+	rv := dtos.TaskCategoryListDTO{
+		TaskCategories: mappers.MapTaskCategoriesToTaskCategoryDTOs(categories),
+	}
+
+	return rv, dtos.ErrorDTO{}
 }
 
 

@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"teagans-web-api/app/utilities/http_utils"
+	"teagans-web-api/app/utilities/httpUtils"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
 	"github.com/go-chi/render"
@@ -22,7 +22,7 @@ func ValidateJWT(next http.Handler) (http.Handler) {
 
 		ctx, errDTO := handleErrDTO(jwtValid, tokenErrDTO, r)
 		if errDTO.Exists() {
-			http_utils.RenderErrorJSON(w, r, errDTO)
+			httpUtils.RenderErrorJSON(w, r, errDTO)
 			return
 		}
 
@@ -40,7 +40,7 @@ func ValidatePWResetJWT(next http.Handler) (http.Handler) {
 
 		ctx, errDTO := handleErrDTO(jwtValid, tokenErrDTO, r)
 		if errDTO.Exists() {
-			http_utils.RenderErrorJSON(w, r, errDTO)
+			httpUtils.RenderErrorJSON(w, r, errDTO)
 			return
 		}
 	
@@ -87,7 +87,7 @@ func getAuthTokenAndService(r *http.Request, pwReset bool) (string, services.Aut
 
 	// if auth token not in headers, get it from cookies
 	if jwt == "" {
-		authCookie, noCookieErr := http_utils.GetAuthCookie(r, pwReset)
+		authCookie, noCookieErr := httpUtils.GetAuthCookie(r, pwReset)
 		if noCookieErr == nil {
 			token = authCookie.Value
 		}

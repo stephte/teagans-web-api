@@ -22,6 +22,8 @@ type User struct {
 	Password					string				`gorm:"-"`
 	EncryptedPassword			[]byte				`gorm:"not null"`
 	PasswordLastUpdated			int64
+
+	TaskCategories				[]TaskCategory
 }
 
 

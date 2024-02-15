@@ -10,11 +10,11 @@ type Task struct {
 
 	TaskCategoryID		uuid.UUID			`gorm:"type:uuid;"`
 
-	Name				string
+	Title				string
 	Details				string
 	Status				enums.TaskStatus
 	Priority			enums.TaskPriority
 	Effort				int64
 	Cleared				bool				`gorm:"default:false;"`
-	TaskNumber			int64				
+	// TaskNumber			int64
 }

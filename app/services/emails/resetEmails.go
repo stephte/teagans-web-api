@@ -11,7 +11,7 @@ type PWResetEmail struct {
 }
 
 func(this *PWResetEmail) GenerateAndSetMessage() error {
-	msg, err := this.generateMessage(this, "app/templates/pw_reset.gohtml")
+	msg, err := this.generateMessage(this, "app/templates/pwReset.gohtml")
 	if err != nil {
 		return err
 	}

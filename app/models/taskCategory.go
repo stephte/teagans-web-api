@@ -13,5 +13,5 @@ type TaskCategory struct {
 	Tasks		[]Task
 
 	Name		string
-	Deleted		bool		`gorm:"default:false;"`
+	Position	int64		`gorm:"default:1;"`
 }

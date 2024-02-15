@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"teagans-web-api/app/utilities/http_utils"
+	"teagans-web-api/app/utilities/httpUtils"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
 	"net/http"
@@ -17,7 +17,7 @@ func DownloadVideo(w http.ResponseWriter, r *http.Request) {
 	data.Url = r.URL.Query().Get("url")
 	data.AudioOnly, dataErr = strconv.ParseBool(r.URL.Query().Get("audioOnly"))
 	if dataErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(dataErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(dataErr, 400, false))
 		return
 	}
 
@@ -26,7 +26,7 @@ func DownloadVideo(w http.ResponseWriter, r *http.Request) {
 
 	dto, errDTO := service.DownloadVideo(data)
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 	defer dto.Filereader.Close()

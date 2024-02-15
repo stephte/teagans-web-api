@@ -12,12 +12,10 @@ const (
 	SUPERADMIN
 )
 
-var UserRolesArr []UserRole = []UserRole{REGULAR, ADMIN, SUPERADMIN}
-
 var roleStrings = []string{"regular", "admin", "superadmin"}
 
 func(role UserRole) String() string {
-	return roleStrings[role]
+	return strings.Title(roleStrings[role-1])
 }
 
 func(role UserRole) IsValid() bool {

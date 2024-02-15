@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"teagans-web-api/app/utilities/http_utils"
+	"teagans-web-api/app/utilities/httpUtils"
 	"teagans-web-api/app/services/dtos"
 	"net/http"
 	"strconv"
@@ -22,7 +22,7 @@ func GetPaginationDTO(next http.Handler) (http.Handler) {
 			page, err = strconv.Atoi(pageStr)
 			if err != nil {
 				errDTO := dtos.CreateErrorDTO(err, 400, false)
-				http_utils.RenderErrorJSON(w, r, errDTO)
+				httpUtils.RenderErrorJSON(w, r, errDTO)
 				return
 			}
 		}
@@ -31,7 +31,7 @@ func GetPaginationDTO(next http.Handler) (http.Handler) {
 			limit, err = strconv.Atoi(limitStr)
 			if err != nil {
 				errDTO := dtos.CreateErrorDTO(err, 400, false)
-				http_utils.RenderErrorJSON(w, r, errDTO)
+				httpUtils.RenderErrorJSON(w, r, errDTO)
 				return
 			}
 		}

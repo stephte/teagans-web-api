@@ -54,7 +54,7 @@ func(this *Router) defineRoutes() {
 		r.Route("/{userId}", func(r chi.Router) {
 			r.Use(middle.ValidateJWT)
 
-			r.Get("/", controllers.FindUser)
+			r.Get("/", controllers.GetUser)
 			r.Patch("/", controllers.UpdateUser)
 			r.Put("/", controllers.UpdateUserOG)
 			r.Delete("/", controllers.DeleteUser)
