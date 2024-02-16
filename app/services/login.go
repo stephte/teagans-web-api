@@ -135,7 +135,7 @@ func(this LoginService) genToken(pwReset bool) (string, string, int64, dtos.Erro
 		payload.PRT = true
 		payload.Expiration = time.Now().Add(time.Minute * 20).Unix()
 	} else {
-		payload.Expiration = now.Add(time.Hour * 4).Unix()
+		payload.Expiration = now.Add(time.Hour * 24).Unix()
 	}
 
 	maxAge := payload.Expiration - now.Unix()
