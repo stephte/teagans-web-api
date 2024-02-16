@@ -52,8 +52,8 @@ func(this LoginService) StartPWReset(dto dtos.EmailDTO) (dtos.ErrorDTO) {
 		return dtos.CreateErrorDTO(hashErr, 500, false)
 	}
 
-	// reset token expires in 1 hour
-	expirationTS := time.Now().Add(time.Hour * 1).Unix()
+	// reset token expires in 20 minutes
+	expirationTS := time.Now().Add(time.Minute * 20).Unix()
 
 	if updateErr := this.db.Model(&this.currentUser).Updates(models.User{PasswordResetToken: tokenHash, PasswordResetExpiration: expirationTS}).Error; updateErr != nil {
 		return dtos.CreateErrorDTO(updateErr, 500, false)
