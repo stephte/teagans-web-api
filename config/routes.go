@@ -72,6 +72,20 @@ func(this *Router) defineRoutes() {
 		r.Use(middle.ValidateJWT)
 
 		r.Post("/", controllers.CreateTaskCategory)
+		r.Route("/{categoryId}", func(r chi.Router) {
+			r.Delete("/", controllers.DeleteTaskCategory)
+
+			r.Get("/tasks", controllers.GetTaskCategoryTasks)
+		})
+	})
+
+	r.Route("/tasks", func(r chi.Router) {
+		r.Use(middle.ValidateJWT)
+
+		r.Post("/", controllers.CreateTask)
+		r.Route("/{taskId}", func(r chi.Router) {
+			r.Delete("/", controllers.DeleteTask)
+		})
 	})
 }
 

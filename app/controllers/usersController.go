@@ -49,7 +49,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.CreateUserDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
-		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
 		return
 	}
 
@@ -63,8 +63,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
 	render.JSON(w, r, userDTO)
+	w.WriteHeader(http.StatusCreated)
 }
 
 
@@ -78,7 +78,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var data map[string]interface{}
 	bindErr := json.NewDecoder(r.Body).Decode(&data)
 	if bindErr != nil {
-		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
 		return
 	}
 
@@ -103,7 +103,7 @@ func UpdateUserOG(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.UserDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
-		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
 		return
 	}
 

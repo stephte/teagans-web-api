@@ -9,6 +9,7 @@ import (
 func MapTaskDTOToTask(dto dtos.TaskDTO) models.Task {
 	taskStatus, _ := enums.ParseTaskStatusString(dto.Status)
 	taskPriority, _ := enums.ParseTaskPriorityString(dto.Priority)
+
 	return models.Task{
 		BaseModel: models.BaseModel{
 			ID: dto.ID,
@@ -20,6 +21,7 @@ func MapTaskDTOToTask(dto dtos.TaskDTO) models.Task {
 		Priority: taskPriority,
 		Effort: dto.Effort,
 		Cleared: dto.Cleared,
+		TaskNumber: dto.TaskNumber,
 	}
 }
 
@@ -35,6 +37,7 @@ func MapTaskToTaskDTO(task models.Task) dtos.TaskDTO {
 		Priority: task.Priority.String(),
 		Effort: task.Effort,
 		Cleared: task.Cleared,
+		TaskNumber: task.TaskNumber,
 	}
 }
 

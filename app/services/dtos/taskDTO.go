@@ -6,7 +6,7 @@ import (
 
 type TaskDTO struct {
 	BaseDTO
-	TaskCategoryID		uuid.UUID			`json:"userId"`
+	TaskCategoryID		uuid.UUID			`json:"taskCategoryID"`
 
 	Title				string				`json:"title"`
 	Details				string				`json:"details"`
@@ -14,7 +14,7 @@ type TaskDTO struct {
 	Priority			string				`json:"priority"`
 	Effort				int64				`json:"effort"`
 	Cleared				bool				`json:"cleared"`
-	// TaskNumber			int64				`json:"taskNumber"`
+	TaskNumber			int64				`json:"taskNumber"`
 }
 
 type TaskListDTO struct {

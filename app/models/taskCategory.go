@@ -7,9 +7,9 @@ import (
 type TaskCategory struct {
 	BaseModel
 
-	UserID		uuid.UUID	`gorm:"type:uuid;"`
-
+	UserID		uuid.UUID	`gorm:"type:uuid;not null;"`
 	User		User
+
 	Tasks		[]Task		`gorm:"constraint:OnDelete:CASCADE;"`
 
 	Name		string		`gorm:"default:null;not null;"`

@@ -12,9 +12,8 @@ func RenderErrorJSON(w http.ResponseWriter, r *http.Request, errorDTO dtos.Error
 		errorDTO.Status = 400
 	}
 
-	w.WriteHeader(errorDTO.Status)
-
 	render.JSON(w, r, errorDTO)
+	w.WriteHeader(errorDTO.Status)
 }
 
 

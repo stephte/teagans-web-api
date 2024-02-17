@@ -9,11 +9,12 @@ import (
 type Task struct {
 	BaseModel
 
-	TaskCategoryID		uuid.UUID			`gorm:"type:uuid;uniqueIndex:cattasknumndx;"`
+	TaskCategoryID		uuid.UUID			`gorm:"type:uuid;uniqueIndex:cattasknumndx;not null;"`
+	TaskCategory		TaskCategory
 
 	Title				string				`gorm:"default:null;not null;"`
 	Details				string
-	Status				enums.TaskStatus	`gorm:"default:null;not null;"`
+	Status				enums.TaskStatus
 	Priority			enums.TaskPriority
 	Effort				int64
 	Cleared				bool				`gorm:"default:false;"`
@@ -21,11 +22,10 @@ type Task struct {
 }
 
 func(this *Task) BeforeCreate(tx *gorm.DB) error {
-	var count int64
-	tx.Where(&Task{TaskCategoryID: this.TaskCategoryID}).Count(&count)
-	// .Where(&Task{}"task_category_id = ?", this.TaskCategoryID.String())
+	var lastTask Task
+	tx.Model(&Task{}).Unscoped().Order("task_number desc").Where("task_category_id = ?", this.TaskCategoryID).First(&lastTask)
 
-	this.TaskNumber = count + 1
+	this.TaskNumber = lastTask.TaskNumber + 1
 
 	return nil
 }
