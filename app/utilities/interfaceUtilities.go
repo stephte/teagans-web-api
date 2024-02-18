@@ -1,11 +1,89 @@
 package utilities
 
 import(
+	"teagans-web-api/app/utilities/uuid"
 	"reflect"
 	"strings"
 	"errors"
 	"fmt"
 )
+
+
+func ValidateMapWithStruct(mapToValidate map[string]interface{}, strct interface{}) (map[string]interface{}, error) {
+	rv := map[string]interface{}{}
+
+	strctFieldList := GetStructFields(strct)
+
+	for key, value := range mapToValidate {
+		// if key exists in the strct, continue on
+		if ndx := StructFieldIndexOf(strctFieldList, key); ndx >= 0 {
+			structField := strctFieldList[ndx]
+			keyName := structField.Name
+
+			typeMatch := reflect.TypeOf(value) == structField.Type
+			if !typeMatch {
+				if IsNumberType(structField.Type.String()) {
+					typeMatch = IsNumberType(GetType(value))
+				} else if structField.Type == reflect.TypeOf(uuid.New()) {
+					_, typeMatch = value.(string)
+				}
+			}
+
+			if typeMatch {
+				rv[keyName] = value
+			} else {
+				return map[string]interface{}{}, errors.New(fmt.Sprintf("Invalid data type passed: key '%s' should be of type '%s', but is type '%T'", key, structField.Type.String(), value))
+			}
+		}
+	}
+
+	return rv, nil
+}
+
+
+func StructToMap(strct interface{}) (map[string]interface{}, error) {
+	rv := map[string]interface{}{}
+
+	structVal := reflect.ValueOf(strct)
+	if structVal.Kind() == reflect.Ptr {
+		structVal = structVal.Elem()
+	}
+
+	if structVal.Kind() != reflect.Struct {
+		return rv, errors.New("Param must be a struct")
+	}
+
+	typ := structVal.Type()
+	for i := 0; i < structVal.NumField(); i++ {
+		key := typ.Field(i).Name
+		if key != "" {
+			rv[key] = structVal.Field(i).Interface()
+		}
+	}
+
+	return rv, nil
+}
+
+
+// return slice with key names (does this method work on map[string]interface?)
+func GetStructFields(strct interface{}) ([]reflect.StructField) {
+	var rv []reflect.StructField
+	structVal := reflect.ValueOf(strct)
+	if structVal.Kind() == reflect.Ptr {
+		structVal = structVal.Elem()
+	}
+
+	typ := structVal.Type()
+	for i := 0; i < structVal.NumField(); i++ {
+		// fmt.Println("typ.field:", typ.Field(i))
+		field := typ.Field(i)
+		if field.Name != "" {
+			rv = append(rv, field)
+		}
+	}
+
+	return rv
+}
 
 
 // returns true if mapKey is a field in struct, and if they are of the same data type

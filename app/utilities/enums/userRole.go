@@ -33,7 +33,7 @@ func ParseRoleString(roleStr string) (UserRole, bool) {
 	return role, ok
 }
 
-func ValToRole(val interface{}) (UserRole, bool) {
+func ValToUserRole(val interface{}) (UserRole, bool) {
 	var roleInt int
 	var roleFloat32 float32
 	var roleFloat64 float64

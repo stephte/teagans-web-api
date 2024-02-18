@@ -8,7 +8,7 @@ import (
 type TaskPriority int
 
 const (
-	LOW		TaskPriority = iota
+	LOW		TaskPriority = iota + 1
 	MEDIUM
 	HIGH
 	URGENT
@@ -17,46 +17,19 @@ const (
 var priorityStrings = []string{"low", "medium", "high", "urgent"}
 
 func(priority TaskPriority) String() string {
-	return strings.Title(priorityStrings[priority])
+	return strings.Title(priorityStrings[priority-1])
 }
 
 func(priority TaskPriority) IsValid() bool {
-	return int(priority) >= 0 && int(priority) < len(priorityStrings)
+	return int(priority) > 0 && int(priority) <= len(priorityStrings)
 }
 
 func ParseTaskPriorityString(priorityStr string) (TaskPriority, bool) {
-	ndx := utilities.StringIndexOf(priorityStrings, strings.ToLower(priorityStr))
+	ndx := utilities.StringIndexOf(priorityStrings, strings.ToLower(priorityStr)) + 1
 
-	if ndx >= 0 {
+	if TaskPriority(ndx).IsValid() {
 		return TaskPriority(ndx), true
 	} else {
-		return MEDIUM, false
+		return LOW, false
 	}
-}
-
-func ValToTaskPriority(val interface{}) (TaskPriority, bool) {
-	var valInt		int
-	var valFloat32 	float32
-	var valFloat64 	float64
-	var valStr		string
-	var ok 			bool
-
-	valInt, ok = val.(int)
-	if ok {
-		return TaskPriority(valInt), true
-	}
-	valFloat32, ok = val.(float32)
-	if ok {
-		return TaskPriority(valFloat32), true
-	}
-	valFloat64, ok = val.(float64)
-	if ok {
-		return TaskPriority(valFloat64), true
-	}
-	valStr, ok = val.(string)
-	if ok {
-		return ParseTaskPriorityString(valStr)
-	}
-
-	return MEDIUM, false
 }

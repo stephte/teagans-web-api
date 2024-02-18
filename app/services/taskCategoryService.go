@@ -37,7 +37,7 @@ func(this TaskCategoryService) CreateTaskCategory(dto dtos.TaskCategoryInDTO) (d
 	return rv, dtos.ErrorDTO{}
 }
 
-func(this TaskCategoryService) UpdateTaskCategory(dto dtos.TaskCategoryInDTO, taskCategoryIdStr string) (dtos.TaskCategoryOutDTO, dtos.ErrorDTO) {
+func(this TaskCategoryService) UpdateTaskCategory(data map[string]interface{}, taskCategoryIdStr string) (dtos.TaskCategoryOutDTO, dtos.ErrorDTO) {
 	err := this.setTaskCategory(taskCategoryIdStr)
 	if err != nil {
 		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(err, 0, false)
@@ -47,19 +47,13 @@ func(this TaskCategoryService) UpdateTaskCategory(dto dtos.TaskCategoryInDTO, ta
 		return dtos.TaskCategoryOutDTO{}, dtos.AccessDeniedError(false)
 	}
 
-	// convert dto to a map[string]interface{}
-	tcMap, mapErr := utilities.StructToMap(dto)
+	tcMap, mapErr := utilities.ValidateMapWithStruct(data, dtos.TaskCategoryInDTO{})
 	if mapErr != nil {
 		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(mapErr, 0, false)
 	}
 
-	// utilities.ValidateMapWithStruct(tcMap, dtos.TaskCategoryInDTO{})
-
-	// dont allow any user to change the user it belongs to
-	delete(tcMap, "UserID")
-
 	// update task category
-	if updateErr := this.db.Model(&this.taskCategory).Updates(tcMap).Error; updateErr != nil {
+	if updateErr := this.db.Model(&this.taskCategory).Omit("user_id").Updates(tcMap).Error; updateErr != nil {
 		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(updateErr, 0, false)
 	}
 

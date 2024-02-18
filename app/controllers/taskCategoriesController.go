@@ -34,8 +34,8 @@ func CreateTaskCategory(w http.ResponseWriter, r *http.Request) {
 func UpdateTaskCategory(w http.ResponseWriter, r *http.Request) {
 	categoryIdStr := chi.URLParam(r, "categoryId")
 
-	var dto dtos.TaskCategoryInDTO
-	bindErr := json.NewDecoder(r.Body).Decode(&dto)
+	var data map[string]interface{}
+	bindErr := json.NewDecoder(r.Body).Decode(&data)
 	if bindErr != nil {
 		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
 		return
@@ -44,7 +44,7 @@ func UpdateTaskCategory(w http.ResponseWriter, r *http.Request) {
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.TaskCategoryService{BaseService: baseService}
 
-	tcDTO, errDTO := service.UpdateTaskCategory(dto, categoryIdStr)
+	tcDTO, errDTO := service.UpdateTaskCategory(data, categoryIdStr)
 	if errDTO.Exists() {
 		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
