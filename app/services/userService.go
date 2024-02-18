@@ -104,7 +104,7 @@ func (this UserService) UpdateUser(userIdStr string, data map[string]interface{}
 	_, exists := validatedData["Role"]
 	if exists {
 		var success bool
-		role, success = enums.ValToRole(validatedData["Role"])
+		role, success = enums.ValToUserRole(validatedData["Role"])
 		if !success {
 			return dtos.UserDTO{}, dtos.CreateErrorDTO(errors.New("Not able to convert role to UserRole type"), 0, false)
 		}
@@ -184,7 +184,7 @@ func(this UserService) GetUserTaskCategories(userIdStr string) (dtos.TaskCategor
 	this.db.Model(&this.user).Order("position asc").Association("TaskCategories").Find(&categories)
 
 	rv := dtos.TaskCategoryListDTO{
-		TaskCategories: mappers.MapTaskCategoriesToTaskCategoryDTOs(categories),
+		TaskCategories: mappers.MapTaskCategoriesToTaskCategoryOutDTOs(categories),
 	}
 
 	return rv, dtos.ErrorDTO{}

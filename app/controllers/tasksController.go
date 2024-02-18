@@ -11,7 +11,7 @@ import (
 )
 
 func CreateTask(w http.ResponseWriter, r *http.Request) {
-	var dto dtos.TaskDTO
+	var dto dtos.TaskInDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
 		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
@@ -41,12 +41,25 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
-	// catIdStr := chi.URLParam(r, "categoryId")
+	taskIdStr := chi.URLParam(r, "taskId")
 
-	// baseService := r.Context().Value("BaseService").(*services.BaseService)
-	// service := services.TaskService{BaseService: baseService}
+	var dto dtos.TaskInDTO
+	bindErr := json.NewDecoder(r.Body).Decode(&dto)
+	if bindErr != nil {
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
+		return
+	}
 
-	render.NoContent(w, r)
+	baseService := r.Context().Value("BaseService").(*services.BaseService)
+	service := services.TaskService{BaseService: baseService}
+
+	taskOutDTO, errDTO := service.UpdateTask(dto, taskIdStr)
+	if errDTO.Exists() {
+		httpUtils.RenderErrorJSON(w, r, errDTO)
+		return
+	}
+
+	render.JSON(w, r, taskOutDTO)
 }
 
 func DeleteTask(w http.ResponseWriter, r *http.Request) {

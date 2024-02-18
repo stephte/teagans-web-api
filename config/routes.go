@@ -73,6 +73,7 @@ func(this *Router) defineRoutes() {
 
 		r.Post("/", controllers.CreateTaskCategory)
 		r.Route("/{categoryId}", func(r chi.Router) {
+			r.Put("/", controllers.UpdateTaskCategory)
 			r.Delete("/", controllers.DeleteTaskCategory)
 
 			r.Get("/tasks", controllers.GetTaskCategoryTasks)

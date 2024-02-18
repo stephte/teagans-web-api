@@ -11,7 +11,7 @@ import (
 )
 
 func CreateTaskCategory(w http.ResponseWriter, r *http.Request) {
-	var dto dtos.TaskCategoryDTO
+	var dto dtos.TaskCategoryInDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
 		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
@@ -32,7 +32,25 @@ func CreateTaskCategory(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateTaskCategory(w http.ResponseWriter, r *http.Request) {
-	render.NoContent(w, r)
+	categoryIdStr := chi.URLParam(r, "categoryId")
+
+	var dto dtos.TaskCategoryInDTO
+	bindErr := json.NewDecoder(r.Body).Decode(&dto)
+	if bindErr != nil {
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
+		return
+	}
+
+	baseService := r.Context().Value("BaseService").(*services.BaseService)
+	service := services.TaskCategoryService{BaseService: baseService}
+
+	tcDTO, errDTO := service.UpdateTaskCategory(dto, categoryIdStr)
+	if errDTO.Exists() {
+		httpUtils.RenderErrorJSON(w, r, errDTO)
+		return
+	}
+
+	render.JSON(w, r, tcDTO)
 }
 
 func DeleteTaskCategory(w http.ResponseWriter, r *http.Request) {

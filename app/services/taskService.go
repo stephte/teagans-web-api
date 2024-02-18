@@ -5,6 +5,7 @@ import (
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/utilities"
 	"teagans-web-api/app/models"
 )
 
@@ -13,8 +14,8 @@ type TaskService struct {
 	task	models.Task
 }
 
-func(this TaskService) CreateTask(dto dtos.TaskDTO) (dtos.TaskDTO, dtos.ErrorDTO) {
-	this.task = mappers.MapTaskDTOToTask(dto)
+func(this TaskService) CreateTask(dto dtos.TaskInDTO) (dtos.TaskOutDTO, dtos.ErrorDTO) {
+	this.task = mappers.MapTaskInDTOToTask(dto)
 	this.task.ID = uuid.UUID{} // don't allow them to set the ID when creating
 
 	// find task category its associating to
@@ -22,15 +23,40 @@ func(this TaskService) CreateTask(dto dtos.TaskDTO) (dtos.TaskDTO, dtos.ErrorDTO
 
 	// unsure if TaskCategory is loadable before saved
 	if taskCategory.UserID != this.currentUser.ID && !this.validateUserHasAccess(enums.SUPERADMIN) {
-		return dtos.TaskDTO{}, dtos.AccessDeniedError(false)
+		return dtos.TaskOutDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	if createErr := this.db.Create(&this.task).Error; createErr != nil {
 		this.log.Warn().Msg(createErr.Error())
-		return dtos.TaskDTO{}, dtos.CreateErrorDTO(createErr, 0, false)
+		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(createErr, 0, false)
 	}
 
-	rv := mappers.MapTaskToTaskDTO(this.task)
+	rv := mappers.MapTaskToTaskOutDTO(this.task)
+
+	return rv, dtos.ErrorDTO{}
+}
+
+func(this TaskService) UpdateTask(dto dtos.TaskInDTO, taskIdStr string) (dtos.TaskOutDTO, dtos.ErrorDTO) {
+	err := this.setTask(taskIdStr)
+	if err != nil {
+		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(err, 0, false)
+	}
+
+	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.task.TaskCategory.UserID {
+		return dtos.TaskOutDTO{}, dtos.AccessDeniedError(false)
+	}
+
+	// convert dto to a map
+	taskMap, mapErr := utilities.StructToMap(dto)
+	if mapErr != nil {
+		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(mapErr, 0, false)
+	}
+
+	if updateErr := this.db.Model(&this.task).Updates(taskMap).Error; updateErr != nil {
+		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(updateErr, 0, false)
+	}
+
+	rv := mappers.MapTaskToTaskOutDTO(this.task)
 
 	return rv, dtos.ErrorDTO{}
 }
@@ -45,7 +71,7 @@ func(this TaskService) DeleteTask(taskIdStr string) dtos.ErrorDTO {
 		return dtos.AccessDeniedError(false)
 	}
 
-	if deleteErr := this.db.Delete(&this.task).Error; deleteErr != nil {
+	if deleteErr := this.db.Unscoped().Delete(&this.task).Error; deleteErr != nil {
 		return dtos.CreateErrorDTO(deleteErr, 0, false)
 	}
 

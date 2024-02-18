@@ -5,6 +5,7 @@ import (
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/utilities"
 	"teagans-web-api/app/models"
 )
 
@@ -13,8 +14,8 @@ type TaskCategoryService struct {
 	taskCategory	models.TaskCategory
 }
 
-func(this TaskCategoryService) CreateTaskCategory(dto dtos.TaskCategoryDTO) (dtos.TaskCategoryDTO, dtos.ErrorDTO) {
-	this.taskCategory = mappers.MapTaskCategoryDTOToTaskCategory(dto)
+func(this TaskCategoryService) CreateTaskCategory(dto dtos.TaskCategoryInDTO) (dtos.TaskCategoryOutDTO, dtos.ErrorDTO) {
+	this.taskCategory = mappers.MapTaskCategoryInDTOToTaskCategory(dto)
 	this.taskCategory.ID = uuid.UUID{} // dont let ID be set by user
 
 	// default it to current user if not present
@@ -23,15 +24,46 @@ func(this TaskCategoryService) CreateTaskCategory(dto dtos.TaskCategoryDTO) (dto
 	}
 
 	if this.taskCategory.UserID != this.currentUser.ID && !this.validateUserHasAccess(enums.SUPERADMIN) {
-		return dtos.TaskCategoryDTO{}, dtos.AccessDeniedError(false)
+		return dtos.TaskCategoryOutDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	if createErr := this.db.Create(&this.taskCategory).Error; createErr != nil {
 		this.log.Warn().Msg(createErr.Error())
-		return dtos.TaskCategoryDTO{}, dtos.CreateErrorDTO(createErr, 0, false)
+		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(createErr, 0, false)
 	}
 	
-	rv := mappers.MapTaskCategoryToTaskCategoryDTO(this.taskCategory)
+	rv := mappers.MapTaskCategoryToTaskCategoryOutDTO(this.taskCategory)
+
+	return rv, dtos.ErrorDTO{}
+}
+
+func(this TaskCategoryService) UpdateTaskCategory(dto dtos.TaskCategoryInDTO, taskCategoryIdStr string) (dtos.TaskCategoryOutDTO, dtos.ErrorDTO) {
+	err := this.setTaskCategory(taskCategoryIdStr)
+	if err != nil {
+		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(err, 0, false)
+	}
+
+	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.taskCategory.UserID {
+		return dtos.TaskCategoryOutDTO{}, dtos.AccessDeniedError(false)
+	}
+
+	// convert dto to a map[string]interface{}
+	tcMap, mapErr := utilities.StructToMap(dto)
+	if mapErr != nil {
+		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(mapErr, 0, false)
+	}
+
+	// utilities.ValidateMapWithStruct(tcMap, dtos.TaskCategoryInDTO{})
+
+	// dont allow any user to change the user it belongs to
+	delete(tcMap, "UserID")
+
+	// update task category
+	if updateErr := this.db.Model(&this.taskCategory).Updates(tcMap).Error; updateErr != nil {
+		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(updateErr, 0, false)
+	}
+
+	rv := mappers.MapTaskCategoryToTaskCategoryOutDTO(this.taskCategory)
 
 	return rv, dtos.ErrorDTO{}
 }
@@ -67,7 +99,7 @@ func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr string) (dtos.
 	this.db.Model(&this.taskCategory).Order("priority desc").Association("Tasks").Find(&tasks)
 
 	rv := dtos.TaskListDTO{
-		Tasks: mappers.MapTasksToTaskDTOs(tasks),
+		Tasks: mappers.MapTasksToTaskOutDTOs(tasks),
 	}
 
 	return rv, dtos.ErrorDTO{}

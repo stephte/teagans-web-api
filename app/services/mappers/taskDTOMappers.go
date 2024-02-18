@@ -6,14 +6,11 @@ import (
 	"teagans-web-api/app/models"
 )
 
-func MapTaskDTOToTask(dto dtos.TaskDTO) models.Task {
+func MapTaskInDTOToTask(dto dtos.TaskInDTO) models.Task {
 	taskStatus, _ := enums.ParseTaskStatusString(dto.Status)
 	taskPriority, _ := enums.ParseTaskPriorityString(dto.Priority)
 
 	return models.Task{
-		BaseModel: models.BaseModel{
-			ID: dto.ID,
-		},
 		TaskCategoryID: dto.TaskCategoryID,
 		Title: dto.Title,
 		Details: dto.Details,
@@ -21,12 +18,11 @@ func MapTaskDTOToTask(dto dtos.TaskDTO) models.Task {
 		Priority: taskPriority,
 		Effort: dto.Effort,
 		Cleared: dto.Cleared,
-		TaskNumber: dto.TaskNumber,
 	}
 }
 
-func MapTaskToTaskDTO(task models.Task) dtos.TaskDTO {
-	return dtos.TaskDTO{
+func MapTaskToTaskOutDTO(task models.Task) dtos.TaskOutDTO {
+	return dtos.TaskOutDTO{
 		BaseDTO: dtos.BaseDTO{
 			ID: task.ID,
 		},
@@ -41,11 +37,11 @@ func MapTaskToTaskDTO(task models.Task) dtos.TaskDTO {
 	}
 }
 
-func MapTasksToTaskDTOs(tasks []models.Task) []dtos.TaskDTO {
-	rv := []dtos.TaskDTO{}
+func MapTasksToTaskOutDTOs(tasks []models.Task) []dtos.TaskOutDTO {
+	rv := []dtos.TaskOutDTO{}
 
 	for _, task := range tasks {
-		rv = append(rv, MapTaskToTaskDTO(task))
+		rv = append(rv, MapTaskToTaskOutDTO(task))
 	}
 
 	return rv

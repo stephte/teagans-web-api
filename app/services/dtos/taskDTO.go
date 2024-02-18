@@ -4,7 +4,7 @@ import (
 	"teagans-web-api/app/utilities/uuid"
 )
 
-type TaskDTO struct {
+type TaskOutDTO struct {
 	BaseDTO
 	TaskCategoryID		uuid.UUID			`json:"taskCategoryID"`
 
@@ -17,6 +17,17 @@ type TaskDTO struct {
 	TaskNumber			int64				`json:"taskNumber"`
 }
 
+type TaskInDTO struct {
+	TaskCategoryID		uuid.UUID			`json:"taskCategoryID"`
+
+	Title				string				`json:"title"`
+	Details				string				`json:"details"`
+	Status				string				`json:"status"`
+	Priority			string				`json:"priority"`
+	Effort				int64				`json:"effort"`
+	Cleared				bool				`json:"cleared"`
+}
+
 type TaskListDTO struct {
-	Tasks	[]TaskDTO	`json:"tasks"`
+	Tasks	[]TaskOutDTO	`json:"tasks"`
 }

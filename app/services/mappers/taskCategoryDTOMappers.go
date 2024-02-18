@@ -5,19 +5,16 @@ import (
 	"teagans-web-api/app/models"
 )
 
-func MapTaskCategoryDTOToTaskCategory(dto dtos.TaskCategoryDTO) models.TaskCategory {
+func MapTaskCategoryInDTOToTaskCategory(dto dtos.TaskCategoryInDTO) models.TaskCategory {
 	return models.TaskCategory{
-		BaseModel: models.BaseModel{
-			ID: dto.ID,
-		},
 		UserID: dto.UserID,
 		Name: dto.Name,
 		Position: dto.Position,
 	}
 }
 
-func MapTaskCategoryToTaskCategoryDTO(tc models.TaskCategory) dtos.TaskCategoryDTO {
-	return dtos.TaskCategoryDTO{
+func MapTaskCategoryToTaskCategoryOutDTO(tc models.TaskCategory) dtos.TaskCategoryOutDTO {
+	return dtos.TaskCategoryOutDTO{
 		BaseDTO: dtos.BaseDTO{
 			ID: tc.ID,
 		},
@@ -27,11 +24,11 @@ func MapTaskCategoryToTaskCategoryDTO(tc models.TaskCategory) dtos.TaskCategoryD
 	}
 }
 
-func MapTaskCategoriesToTaskCategoryDTOs(tcs []models.TaskCategory) []dtos.TaskCategoryDTO {
-	rv := []dtos.TaskCategoryDTO{}
+func MapTaskCategoriesToTaskCategoryOutDTOs(tcs []models.TaskCategory) []dtos.TaskCategoryOutDTO {
+	rv := []dtos.TaskCategoryOutDTO{}
 
 	for _, tc := range tcs {
-		rv = append(rv, MapTaskCategoryToTaskCategoryDTO(tc))
+		rv = append(rv, MapTaskCategoryToTaskCategoryOutDTO(tc))
 	}
 
 	return rv
