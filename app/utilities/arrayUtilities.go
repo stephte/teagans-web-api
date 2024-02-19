@@ -1,28 +1,28 @@
 package utilities
 
+import (
+	"reflect"
+)
 
-func StringArrContains(arr []string, value string) bool {
-	return StringIndexOf(arr, value) >= 0
-}
 
-func IntArrContains(arr []int64, value int64) bool {
-	return IntIndexOf(arr, value) >= 0
-}
-
-func StringIndexOf(arr []string, value string) int64 {
+// generic indexOf to be used for any type
+func IndexOf[T comparable](arr []T, value T) int {
 	for ndx, el := range arr {
-		if el == value {
-			return int64(ndx)
+		if value == el {
+			return ndx
 		}
 	}
-
 	return -1
 }
 
-func IntIndexOf(arr []int64, value int64) int64 {
+func ArrContains[T comparable](arr []T, value T) bool {
+	return IndexOf(arr, value) >= 0
+}
+
+func StructFieldIndexOf(arr []reflect.StructField, value string) int {
 	for ndx, el := range arr {
-		if el == value {
-			return int64(ndx)
+		if value == el.Tag.Get("json") || value == el.Name {
+			return ndx
 		}
 	}
 

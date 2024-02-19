@@ -1,11 +1,11 @@
 package services
 
 import (
+	"teagans-web-api/app/utilities/interfaceUtils"
 	"teagans-web-api/app/services/mappers"
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/services/dtos"
-	"teagans-web-api/app/utilities"
 	"teagans-web-api/app/models"
 )
 
@@ -47,7 +47,7 @@ func(this TaskCategoryService) UpdateTaskCategory(data map[string]interface{}, t
 		return dtos.TaskCategoryOutDTO{}, dtos.AccessDeniedError(false)
 	}
 
-	tcMap, mapErr := utilities.ValidateMapWithStruct(data, dtos.TaskCategoryInDTO{})
+	tcMap, mapErr := interfaceUtils.ValidateMapWithStruct(data, dtos.TaskCategoryInDTO{})
 	if mapErr != nil {
 		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(mapErr, 0, false)
 	}

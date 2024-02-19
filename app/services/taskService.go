@@ -1,11 +1,11 @@
 package services
 
 import (
+	"teagans-web-api/app/utilities/interfaceUtils"
 	"teagans-web-api/app/services/mappers"
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/services/dtos"
-	"teagans-web-api/app/utilities"
 	"teagans-web-api/app/models"
 )
 
@@ -36,7 +36,7 @@ func(this TaskService) CreateTask(dto dtos.TaskInDTO) (dtos.TaskOutDTO, dtos.Err
 	return rv, dtos.ErrorDTO{}
 }
 
-func(this TaskService) UpdateTask(dto dtos.TaskInDTO, taskIdStr string) (dtos.TaskOutDTO, dtos.ErrorDTO) {
+func(this TaskService) UpdateTask(data map[string]interface{}, taskIdStr string) (dtos.TaskOutDTO, dtos.ErrorDTO) {
 	err := this.setTask(taskIdStr)
 	if err != nil {
 		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(err, 0, false)
@@ -47,7 +47,7 @@ func(this TaskService) UpdateTask(dto dtos.TaskInDTO, taskIdStr string) (dtos.Ta
 	}
 
 	// convert dto to a map
-	taskMap, mapErr := utilities.StructToMap(dto)
+	taskMap, mapErr := interfaceUtils.ValidateMapWithStruct(data, dtos.TaskInDTO{})
 	if mapErr != nil {
 		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(mapErr, 0, false)
 	}

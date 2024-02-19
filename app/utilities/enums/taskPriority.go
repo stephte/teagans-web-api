@@ -8,7 +8,7 @@ import (
 type TaskPriority int
 
 const (
-	LOW		TaskPriority = iota + 1
+	LOW			TaskPriority = iota + 1
 	MEDIUM
 	HIGH
 	URGENT
@@ -25,7 +25,7 @@ func(priority TaskPriority) IsValid() bool {
 }
 
 func ParseTaskPriorityString(priorityStr string) (TaskPriority, bool) {
-	ndx := utilities.StringIndexOf(priorityStrings, strings.ToLower(priorityStr)) + 1
+	ndx := utilities.IndexOf(priorityStrings, strings.ToLower(priorityStr)) + 1
 
 	if TaskPriority(ndx).IsValid() {
 		return TaskPriority(ndx), true

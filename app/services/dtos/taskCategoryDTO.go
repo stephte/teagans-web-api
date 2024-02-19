@@ -4,6 +4,8 @@ import (
 	"teagans-web-api/app/utilities/uuid"
 )
 
+// REFACTOR TO NOT DUPLICATE SAME FIELDS
+
 type TaskCategoryOutDTO struct {
 	BaseDTO
 	UserID		uuid.UUID	`json:"userId"`

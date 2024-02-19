@@ -43,8 +43,8 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	taskIdStr := chi.URLParam(r, "taskId")
 
-	var dto dtos.TaskInDTO
-	bindErr := json.NewDecoder(r.Body).Decode(&dto)
+	var data map[string]interface{}
+	bindErr := json.NewDecoder(r.Body).Decode(&data)
 	if bindErr != nil {
 		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
 		return
@@ -53,7 +53,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.TaskService{BaseService: baseService}
 
-	taskOutDTO, errDTO := service.UpdateTask(dto, taskIdStr)
+	taskOutDTO, errDTO := service.UpdateTask(data, taskIdStr)
 	if errDTO.Exists() {
 		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return

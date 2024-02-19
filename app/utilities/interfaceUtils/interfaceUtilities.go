@@ -1,14 +1,16 @@
-package utilities
+package interfaceUtils
 
 import(
+	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
+	"teagans-web-api/app/utilities"
 	"reflect"
 	"strings"
 	"errors"
 	"fmt"
 )
 
-
+// REFACTOR THIS!
 func ValidateMapWithStruct(mapToValidate map[string]interface{}, strct interface{}) (map[string]interface{}, error) {
 	rv := map[string]interface{}{}
 
@@ -16,11 +18,36 @@ func ValidateMapWithStruct(mapToValidate map[string]interface{}, strct interface
 
 	for key, value := range mapToValidate {
 		// if key exists in the strct, continue on
-		if ndx := StructFieldIndexOf(strctFieldList, key); ndx >= 0 {
+		if ndx := utilities.StructFieldIndexOf(strctFieldList, key); ndx >= 0 {
 			structField := strctFieldList[ndx]
 			keyName := structField.Name
+			typeMatch := false
 
-			typeMatch := reflect.TypeOf(value) == structField.Type
+			// handle case where its an enum passed in as a string
+			// MOVE THIS INTO ITS OWN FUNC
+			enumTyp := structField.Tag.Get("enum")
+			if enumTyp != "" {
+				_, stringOk := value.(string)
+				if !stringOk {
+					return map[string]interface{}{}, errors.New(fmt.Sprintf("Invalid data type passed: key '%s' should be of type 'string', but is type '%T'", key, value))
+				}
+
+				methodsMap := enums.GetParseMethodsMap()
+				funcName := fmt.Sprintf("Parse%sString", enumTyp)
+				meth, ok := methodsMap[funcName]
+				if !ok {
+					return map[string]interface{}{}, errors.New(fmt.Sprintf("Enum parse function %s not found in ParseMethodsMap", funcName))
+				}
+
+				fnc := reflect.ValueOf(meth)
+				res := fnc.Call([]reflect.Value{ reflect.ValueOf(value) })
+				val := res[0]
+
+				value = val.Int()
+				typeMatch = true
+			}
+
+			typeMatch = typeMatch || reflect.TypeOf(value) == structField.Type
 			if !typeMatch {
 				if IsNumberType(structField.Type.String()) {
 					typeMatch = IsNumberType(GetType(value))

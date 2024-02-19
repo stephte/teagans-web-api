@@ -28,7 +28,7 @@ var roleMap = map[string]UserRole {
 	"superadmin":	SUPERADMIN,
 }
 
-func ParseRoleString(roleStr string) (UserRole, bool) {
+func ParseUserRoleString(roleStr string) (UserRole, bool) {
 	role, ok := roleMap[strings.ToLower(roleStr)]
 	return role, ok
 }
@@ -54,7 +54,7 @@ func ValToUserRole(val interface{}) (UserRole, bool) {
 	}
 	roleStr, ok = val.(string)
 	if ok {
-		return ParseRoleString(roleStr)
+		return ParseUserRoleString(roleStr)
 	}
 
 	return REGULAR, false

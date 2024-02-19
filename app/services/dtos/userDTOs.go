@@ -1,15 +1,24 @@
 package dtos
 
 import (
+	"teagans-web-api/app/utilities/interfaceUtils"
 	"teagans-web-api/app/utilities/enums"
-	"teagans-web-api/app/utilities"
 	"strings"
 	"errors"
 	"fmt"
 )
 
+// REFACTOR TO NOT DUPLICATE SAME FIELDS
+
 type UserDTO struct {
 	BaseDTO
+	FirstName 	string				`json:"firstName"`
+	LastName	string				`json:"lastName"`
+	Email		string				`json:"email"`
+	Role		enums.UserRole		`json:"role"`
+}
+
+type UserInDTO struct {
 	FirstName 	string				`json:"firstName"`
 	LastName	string				`json:"lastName"`
 	Email		string				`json:"email"`
@@ -41,7 +50,7 @@ func ValidateUserMap(data map[string]interface{}) (map[string]interface{}, error
 			continue
 		}
 
-		typ := utilities.GetType(value)
+		typ := interfaceUtils.GetType(value)
 
 		// custom check for role, since it is an enum
 		if capitalKey == "Role" {
@@ -51,7 +60,7 @@ func ValidateUserMap(data map[string]interface{}) (map[string]interface{}, error
 			}
 		}
 
-		validKey, typErr := utilities.CheckKeyValue(strct, capitalKey, typ)
+		validKey, typErr := interfaceUtils.CheckKeyValue(strct, capitalKey, typ)
 
 		if typErr != nil {
 			return rv, typErr

@@ -17,7 +17,7 @@ const (
 var statusStrings = []string{"todo", "waiting", "started", "complete"}
 
 func(status TaskStatus) String() string {
-	return strings.Title(statusStrings[status])
+	return strings.Title(statusStrings[status-1])
 }
 
 func(status TaskStatus) IsValid() bool {
@@ -25,7 +25,7 @@ func(status TaskStatus) IsValid() bool {
 }
 
 func ParseTaskStatusString(statusStr string) (TaskStatus, bool) {
-	ndx := utilities.StringIndexOf(statusStrings, strings.ToLower(statusStr)) + 1
+	ndx := utilities.IndexOf(statusStrings, strings.ToLower(statusStr)) + 1
 
 	if ndx >= 0 {
 		return TaskStatus(ndx), true
