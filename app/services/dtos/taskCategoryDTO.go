@@ -4,21 +4,16 @@ import (
 	"teagans-web-api/app/utilities/uuid"
 )
 
-// REFACTOR TO NOT DUPLICATE SAME FIELDS
-
-type TaskCategoryOutDTO struct {
-	BaseDTO
+type TaskCategoryInDTO struct {
 	UserID		uuid.UUID	`json:"userId"`
 
 	Name		string		`json:"name"`
 	Position	int64		`json:"position"`
 }
 
-type TaskCategoryInDTO struct {
-	UserID		uuid.UUID	`json:"userId"`
-
-	Name		string		`json:"name"`
-	Position	int64		`json:"position"`
+type TaskCategoryOutDTO struct {
+	BaseDTO
+	TaskCategoryInDTO
 }
 
 type TaskCategoryListDTO struct {

@@ -18,9 +18,11 @@ func MapTaskCategoryToTaskCategoryOutDTO(tc models.TaskCategory) dtos.TaskCatego
 		BaseDTO: dtos.BaseDTO{
 			ID: tc.ID,
 		},
-		UserID: tc.UserID,
-		Name: tc.Name,
-		Position: tc.Position,
+		TaskCategoryInDTO: dtos.TaskCategoryInDTO{
+			UserID: tc.UserID,
+			Name: tc.Name,
+			Position: tc.Position,
+		},
 	}
 }
 

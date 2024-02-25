@@ -17,18 +17,32 @@ const (
 var priorityStrings = []string{"low", "medium", "high", "urgent"}
 
 func(priority TaskPriority) String() string {
-	return strings.Title(priorityStrings[priority-1])
+	if priority.IsValid() {
+		return strings.Title(priorityStrings[priority-1])
+	}
+
+	return ""
 }
 
 func(priority TaskPriority) IsValid() bool {
 	return int(priority) > 0 && int(priority) <= len(priorityStrings)
 }
 
-func ParseTaskPriorityString(priorityStr string) (TaskPriority, bool) {
-	ndx := utilities.IndexOf(priorityStrings, strings.ToLower(priorityStr)) + 1
+func NewTaskPriority(num int64) (TaskPriority, bool) {
+	rv := TaskPriority(num)
 
-	if TaskPriority(ndx).IsValid() {
-		return TaskPriority(ndx), true
+	if rv.IsValid() {
+		return rv, true
+	} else {
+		return LOW, false
+	}
+}
+
+func ParseTaskPriorityString(str string) (TaskPriority, bool) {
+	ndx := utilities.IndexOf(priorityStrings, strings.ToLower(str))
+
+	if ndx >= 0 {
+		return TaskPriority(ndx + 1), true
 	} else {
 		return LOW, false
 	}

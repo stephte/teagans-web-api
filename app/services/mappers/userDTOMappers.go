@@ -1,49 +1,51 @@
 package mappers
 
 import (
+	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/models"
 )
 
 func MapCreateUserDTOToUser(dto dtos.CreateUserDTO) models.User {
+	userRole, _ := enums.NewUserRole(dto.Role)
 	return models.User{
 		FirstName: dto.FirstName,
 		LastName: dto.LastName,
 		Email: dto.Email,
-		Role: dto.Role,
+		Role: userRole,
 		Password: dto.Password,
 	}
 }
 
-func MapUserDTOToUser(dto dtos.UserDTO) models.User {
+func MapUserInDTOToUser(dto dtos.UserInDTO) models.User {
+	userRole, _ := enums.NewUserRole(dto.Role)
 	return models.User{
-		BaseModel: models.BaseModel{
-			ID: dto.ID,
-		},
 		FirstName: dto.FirstName,
 		LastName: dto.LastName,
 		Email: dto.Email,
-		Role: dto.Role,
+		Role: userRole,
 	}
 }
 
-func MapUserToUserDTO(user models.User) dtos.UserDTO {
-	return dtos.UserDTO{
+func MapUserToUserOutDTO(user models.User) dtos.UserOutDTO {
+	return dtos.UserOutDTO{
 		BaseDTO: dtos.BaseDTO{
 			ID: user.ID,
 		},
-		FirstName: user.FirstName,
-		LastName: user.LastName,
-		Email: user.Email,
-		Role: user.Role,
+		UserInDTO: dtos.UserInDTO{
+			FirstName: user.FirstName,
+			LastName: user.LastName,
+			Email: user.Email,
+			Role: int64(user.Role),
+		},
 	}
 }
 
-func MapUsersToUserDTOs(users []models.User) ([]dtos.UserDTO) {
-	rv := []dtos.UserDTO{}
+func MapUsersToUserOutDTOs(users []models.User) ([]dtos.UserOutDTO) {
+	rv := []dtos.UserOutDTO{}
 
 	for _, user := range users {
-		rv = append(rv, MapUserToUserDTO(user))
+		rv = append(rv, MapUserToUserOutDTO(user))
 	}
 
 	return rv

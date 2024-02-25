@@ -10,7 +10,6 @@ import(
 	"fmt"
 )
 
-// REFACTOR THIS!
 func ValidateMapWithStruct(mapToValidate map[string]interface{}, strct interface{}) (map[string]interface{}, error) {
 	rv := map[string]interface{}{}
 
@@ -23,28 +22,29 @@ func ValidateMapWithStruct(mapToValidate map[string]interface{}, strct interface
 			keyName := structField.Name
 			typeMatch := false
 
-			// handle case where its an enum passed in as a string
-			// MOVE THIS INTO ITS OWN FUNC
+			// handle case where its an enum passed in
 			enumTyp := structField.Tag.Get("enum")
 			if enumTyp != "" {
+				var methodsMap map[string]interface{}
 				_, stringOk := value.(string)
-				if !stringOk {
+				dubVal, doubleOk := value.(float64)
+
+				if stringOk {
+					methodsMap = enums.GetParseMethodsMap()
+				} else if doubleOk {
+					value = int64(dubVal)
+					methodsMap = enums.GetNewMethodsMap()
+				} else {
 					return map[string]interface{}{}, errors.New(fmt.Sprintf("Invalid data type passed: key '%s' should be of type 'string', but is type '%T'", key, value))
 				}
 
-				methodsMap := enums.GetParseMethodsMap()
-				funcName := fmt.Sprintf("Parse%sString", enumTyp)
-				meth, ok := methodsMap[funcName]
-				if !ok {
-					return map[string]interface{}{}, errors.New(fmt.Sprintf("Enum parse function %s not found in ParseMethodsMap", funcName))
+				enumInt, enumValid := getEnumValue(value, enumTyp, methodsMap)
+				if enumValid {
+					value = enumInt
+					typeMatch = true
+				} else {
+					return map[string]interface{}{}, errors.New(fmt.Sprintf("Invalid enum value passed for '%s'", key))
 				}
-
-				fnc := reflect.ValueOf(meth)
-				res := fnc.Call([]reflect.Value{ reflect.ValueOf(value) })
-				val := res[0]
-
-				value = val.Int()
-				typeMatch = true
 			}
 
 			typeMatch = typeMatch || reflect.TypeOf(value) == structField.Type
@@ -102,7 +102,6 @@ func GetStructFields(strct interface{}) ([]reflect.StructField) {
 
 	typ := structVal.Type()
 	for i := 0; i < structVal.NumField(); i++ {
-		// fmt.Println("typ.field:", typ.Field(i))
 		field := typ.Field(i)
 		if field.Name != "" {
 			rv = append(rv, field)
@@ -148,4 +147,22 @@ func IsNumberType(typStr string) bool {
 	}
 
 	return false
+}
+
+// ---------- private ----------
+
+func getEnumValue(value interface{}, enumTyp string, methodsMap map[string]interface{}) (int64, bool) {
+	meth, ok := methodsMap[enumTyp]
+	if !ok {
+		fmt.Println(fmt.Sprintf("Enum parse function %s not found in MethodsMap", enumTyp))
+		return 0, false
+	}
+
+	fnc := reflect.ValueOf(meth)
+	res := fnc.Call([]reflect.Value{ reflect.ValueOf(value) })
+
+	enumVal := res[0]
+	enumBool := res[1]
+
+	return enumVal.Int(), enumBool.Bool()
 }

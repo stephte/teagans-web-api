@@ -100,7 +100,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 func UpdateUserOG(w http.ResponseWriter, r *http.Request) {
 	userIdStr := chi.URLParam(r, "userId")
 
-	var dto dtos.UserDTO
+	var dto dtos.UserInDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
 		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))

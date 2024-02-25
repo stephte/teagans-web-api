@@ -1,6 +1,7 @@
 package enums
 
 import (
+	"teagans-web-api/app/utilities"
 	"strings"
 )
 
@@ -15,22 +16,35 @@ const (
 var roleStrings = []string{"regular", "admin", "superadmin"}
 
 func(role UserRole) String() string {
-	return strings.Title(roleStrings[role-1])
+	if role.IsValid() {
+		return strings.Title(roleStrings[role-1])
+	}
+
+	return ""
 }
 
 func(role UserRole) IsValid() bool {
-	return int(role) <= len(roleStrings) && int(role) > 0
+	return int(role) > 0 && int(role) <= len(roleStrings)
 }
 
-var roleMap = map[string]UserRole {
-	"regular":		REGULAR,
-	"admin":		ADMIN,
-	"superadmin":	SUPERADMIN,
+func NewUserRole(num int64) (UserRole, bool) {
+	rv := UserRole(num)
+
+	if rv.IsValid() {
+		return rv, true
+	} else {
+		return REGULAR, false
+	}
 }
 
-func ParseUserRoleString(roleStr string) (UserRole, bool) {
-	role, ok := roleMap[strings.ToLower(roleStr)]
-	return role, ok
+func ParseUserRoleString(str string) (UserRole, bool) {
+	ndx := utilities.IndexOf(roleStrings, strings.ToLower(str))
+
+	if ndx >= 0 {
+		return UserRole(ndx + 1), true
+	} else {
+		return REGULAR, false
+	}
 }
 
 func ValToUserRole(val interface{}) (UserRole, bool) {

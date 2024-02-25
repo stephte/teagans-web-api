@@ -9,8 +9,16 @@ type Enum interface {
 
 func GetParseMethodsMap() map[string]interface{} {
 	return map[string]interface{} {
-		"ParseTaskPriorityString": ParseTaskPriorityString,
-		"ParseTaskStatusString": ParseTaskStatusString,
-		"ParseUserRoleString": ParseUserRoleString,
+		"TaskPriority": ParseTaskPriorityString,
+		"TaskStatus": ParseTaskStatusString,
+		"UserRole": ParseUserRoleString,
+	}
+}
+
+func GetNewMethodsMap() map[string]interface{} {
+	return map[string]interface{} {
+		"TaskPriority": NewTaskPriority,
+		"TaskStatus": NewTaskStatus,
+		"UserRole": NewUserRole,
 	}
 }
