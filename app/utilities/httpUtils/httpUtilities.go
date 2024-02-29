@@ -5,24 +5,22 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-	"bytes"
 )
 
 func RenderJSON(w http.ResponseWriter, data interface{}, status int) {
-	buf := &bytes.Buffer{}
-	encoder := json.NewEncoder(buf)
-	if err := encoder.Encode(data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	rvJson, jsonErr := json.Marshal(data)
+	if jsonErr != nil {
+		http.Error(w, jsonErr.Error(), http.StatusInternalServerError)
 	}
 
+	// default status to 200
 	if status == 0 {
 		status = 200
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	w.Write(buf.Bytes())
+	w.Write(rvJson)
 }
 
 func RenderErrorJSON(w http.ResponseWriter, r *http.Request, errorDTO dtos.ErrorDTO) {
