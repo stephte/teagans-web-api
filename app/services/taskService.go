@@ -16,7 +16,6 @@ type TaskService struct {
 
 func(this TaskService) CreateTask(dto dtos.TaskInDTO) (dtos.TaskOutDTO, dtos.ErrorDTO) {
 	this.task = mappers.MapTaskInDTOToTask(dto)
-	this.task.ID = uuid.UUID{} // don't allow them to set the ID when creating
 
 	// find task category its associating to
 	taskCategory := this.getTaskCategory()
@@ -34,6 +33,19 @@ func(this TaskService) CreateTask(dto dtos.TaskInDTO) (dtos.TaskOutDTO, dtos.Err
 	rv := mappers.MapTaskToTaskOutDTO(this.task)
 
 	return rv, dtos.ErrorDTO{}
+}
+
+func(this TaskService) GetTask(taskIdStr string) (dtos.TaskOutDTO, dtos.ErrorDTO) {
+	findErr := this.setTask(taskIdStr)
+	if findErr != nil {
+		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(findErr, 0, false)
+	}
+
+	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.task.TaskCategory.UserID {
+		return dtos.TaskOutDTO{}, dtos.AccessDeniedError(false)
+	}
+
+	return mappers.MapTaskToTaskOutDTO(this.task), dtos.ErrorDTO{}
 }
 
 func(this TaskService) UpdateTask(data map[string]interface{}, taskIdStr string) (dtos.TaskOutDTO, dtos.ErrorDTO) {
@@ -80,8 +92,8 @@ func(this TaskService) DeleteTask(taskIdStr string) dtos.ErrorDTO {
 
 // ----- private -----
 
-func(this *TaskService) setTask(categoryIdStr string) error {
-	id, parseErr := uuid.Parse(categoryIdStr)
+func(this *TaskService) setTask(taskIdStr string) error {
+	id, parseErr := uuid.Parse(taskIdStr)
 	if parseErr != nil {
 		return parseErr
 	}

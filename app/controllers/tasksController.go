@@ -32,12 +32,18 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTask(w http.ResponseWriter, r *http.Request) {
-	// catIdStr := chi.URLParam(r, "categoryId")
+	taskIdStr := chi.URLParam(r, "taskId")
 
-	// baseService := r.Context().Value("BaseService").(*services.BaseService)
-	// service := services.TaskService{BaseService: baseService}
+	baseService := r.Context().Value("BaseService").(*services.BaseService)
+	service := services.TaskService{BaseService: baseService}
 
-	render.NoContent(w, r)
+	taskOutDTO, errDTO := service.GetTask(taskIdStr)
+	if errDTO.Exists() {
+		httpUtils.RenderErrorJSON(w, r, errDTO)
+		return
+	}
+
+	render.JSON(w, r, taskOutDTO)
 }
 
 func UpdateTask(w http.ResponseWriter, r *http.Request) {

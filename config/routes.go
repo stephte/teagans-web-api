@@ -85,6 +85,7 @@ func(this *Router) defineRoutes() {
 
 		r.Post("/", controllers.CreateTask)
 		r.Route("/{taskId}", func(r chi.Router) {
+			r.Get("/", controllers.GetTask)
 			r.Patch("/", controllers.UpdateTask)
 			r.Delete("/", controllers.DeleteTask)
 		})
