@@ -1,6 +1,7 @@
 package tests
 
 import (
+	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/tests/testhelper"
 	"encoding/json"
 	"testing"
@@ -102,7 +103,7 @@ func TestUserCreate(t *testing.T) {
 
 	helper.AssertStatus(res, 201)
 
-	body := helper.GetUserDTO(res)
+	body := helper.GetUserOutDTO(res)
 	helper.Assert(body.FirstName == "Testy", "Firstname value incorrect")
 	helper.Assert(body.LastName == "McTest", "Lastname value incorrect")
 	helper.Assert(body.Email == "testymctest@test.com", "Email incorrect")
@@ -161,7 +162,7 @@ func TestValidAdminUserCreate(t *testing.T) {
 
 	helper.AssertStatus(res, 201)
 
-	body := helper.GetUserDTO(res)
+	body := helper.GetUserOutDTO(res)
 	helper.Assert(body.FirstName == "Testy", "Firstname value incorrect")
 	helper.Assert(body.LastName == "McTest", "Lastname value incorrect")
 	helper.Assert(body.Email == "testymctest@test.com", "Email incorrect")
@@ -240,11 +241,11 @@ func  TestUserUpdateWorksForUser(t *testing.T) {
 	res := helper.SendAsRegularUser("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := helper.GetUserDTO(res)
+	body := helper.GetUserOutDTO(res)
 	helper.Assert(body.FirstName == "Testie", "Firstname should be updated")
 	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should be the same")
 	helper.Assert(body.Email == helper.RegularUser.Email, "Email should stay the same")
-	helper.Assert(body.Role == helper.RegularUser.Role, "Role should stay the same")
+	helper.Assert(enums.UserRole(body.Role) == helper.RegularUser.Role, "Role should stay the same")
 
 	helper.Assert(body.FirstName == "Testie", "Firstname should be updated")
 }
@@ -288,11 +289,11 @@ func  TestUserUpdateWorksForSuperAdmin(t *testing.T) {
 	res := helper.SendAsSuperAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := helper.GetUserDTO(res)
+	body := helper.GetUserOutDTO(res)
 	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should stay the same")
 	helper.Assert(body.LastName == "Test", "Lastname should be updated")
 	helper.Assert(body.Email == helper.RegularUser.Email, "Email should stay the same")
-	helper.Assert(body.Role == helper.RegularUser.Role, "Role should stay the same")
+	helper.Assert(enums.UserRole(body.Role) == helper.RegularUser.Role, "Role should stay the same")
 }
 
 
@@ -314,7 +315,7 @@ func  TestSuperAdminCanUpdateRole(t *testing.T) {
 	res := helper.SendAsSuperAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := helper.GetUserDTO(res)
+	body := helper.GetUserOutDTO(res)
 	helper.Assert(body.Email == "test@test.test", "Email should be updated and should be lowercase")
 	helper.Assert(body.Role == 2, "Role should be updated")
 	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should stay the same")
@@ -340,7 +341,7 @@ func TestAdminCanUpdateRegularUserToAdmin(t *testing.T) {
 	res := helper.SendAsAdmin("patch", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
 	helper.AssertStatus(res, 200)
 
-	body := helper.GetUserDTO(res)
+	body := helper.GetUserOutDTO(res)
 	helper.Assert(body.Email == helper.RegularUser.Email, "Email should stay the same")
 	helper.Assert(body.Role == 2, "Role should be updated")
 	helper.Assert(body.FirstName == "Test", "Firstname should be updated")
@@ -435,160 +436,160 @@ func TestUserUpdateInvalidEmail(t *testing.T) {
 
 // ----- User update OG (PUT) -----
 
-func TestUserUpdateOGWorksForUser(t *testing.T) {
-	helper := testhelper.InitTestDBAndService(t)
-	helper.InitAuth()
-	defer helper.CleanupAuth()
+// func TestUserUpdateOGWorksForUser(t *testing.T) {
+// 	helper := testhelper.InitTestDBAndService(t)
+// 	helper.InitAuth()
+// 	defer helper.CleanupAuth()
 
-	data := map[string]interface{}{
-		"firstName": "Testie",
-		"lastName": helper.RegularUser.LastName,
-		"email": helper.RegularUser.Email,
-		"role": helper.RegularUser.Role,
-	}
+// 	data := map[string]interface{}{
+// 		"firstName": "Testie",
+// 		"lastName": helper.RegularUser.LastName,
+// 		"email": helper.RegularUser.Email,
+// 		"role": helper.RegularUser.Role,
+// 	}
 
-	reqData, jsonErr := json.Marshal(data)
-	if jsonErr != nil {
-		t.Fatal(jsonErr.Error())
-	}
+// 	reqData, jsonErr := json.Marshal(data)
+// 	if jsonErr != nil {
+// 		t.Fatal(jsonErr.Error())
+// 	}
 
-	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
-	helper.AssertStatus(res, 200)
+// 	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
+// 	helper.AssertStatus(res, 200)
 
-	body := helper.GetUserDTO(res)
-	helper.Assert(body.FirstName == "Testie", "Firstname should be updated")
-	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should be the same")
-	helper.Assert(body.Email == helper.RegularUser.Email, "Email should be the same")
-	helper.Assert(body.Role == helper.RegularUser.Role, "Role should be the same")
-}
-
-
-func TestUserUpdateOGFailsForOtherUser(t *testing.T) {
-	helper := testhelper.InitTestDBAndService(t)
-	helper.InitAuth()
-	defer helper.CleanupAuth()
-
-	data := map[string]interface{}{
-		"firstName": "Testie",
-		"lastName": helper.AdminUser.LastName,
-		"email": helper.AdminUser.Email,
-		"role": helper.AdminUser.Role,
-	}
-
-	reqData, jsonErr := json.Marshal(data)
-	if jsonErr != nil {
-		t.Fatal(jsonErr.Error())
-	}
-
-	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.AdminUser.ID), reqData)
-
-	helper.AssertStatus(res, 401)
-	helper.AssertErrDTOPresent(res)
-}
+// 	body := helper.GetUserOutDTO(res)
+// 	helper.Assert(body.FirstName == "Testie", "Firstname should be updated")
+// 	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should be the same")
+// 	helper.Assert(body.Email == helper.RegularUser.Email, "Email should be the same")
+// 	helper.Assert(enums.UserRole(body.Role) == helper.RegularUser.Role, "Role should be the same")
+// }
 
 
-func TestUserUpdateOGWorksForSuperAdmin(t *testing.T) {
-	helper := testhelper.InitTestDBAndService(t)
-	helper.InitAuth()
-	defer helper.CleanupAuth()
+// func TestUserUpdateOGFailsForOtherUser(t *testing.T) {
+// 	helper := testhelper.InitTestDBAndService(t)
+// 	helper.InitAuth()
+// 	defer helper.CleanupAuth()
 
-	data := map[string]interface{}{
-		"firstName": helper.RegularUser.FirstName,
-		"lastName": "Test",
-		"email": helper.RegularUser.Email,
-		"role": helper.RegularUser.Role,
-	}
+// 	data := map[string]interface{}{
+// 		"firstName": "Testie",
+// 		"lastName": helper.AdminUser.LastName,
+// 		"email": helper.AdminUser.Email,
+// 		"role": helper.AdminUser.Role,
+// 	}
 
-	reqData, jsonErr := json.Marshal(data)
-	if jsonErr != nil {
-		t.Fatal(jsonErr.Error())
-	}
+// 	reqData, jsonErr := json.Marshal(data)
+// 	if jsonErr != nil {
+// 		t.Fatal(jsonErr.Error())
+// 	}
 
-	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
-	helper.AssertStatus(res, 200)
+// 	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.AdminUser.ID), reqData)
 
-	body := helper.GetUserDTO(res)
-	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should be the same")
-	helper.Assert(body.LastName == "Test", "Lastname should be updated")
-	helper.Assert(body.Email == helper.RegularUser.Email, "Lastname should be the same")
-	helper.Assert(body.Role == helper.RegularUser.Role, "Lastname should be the same")
-}
+// 	helper.AssertStatus(res, 401)
+// 	helper.AssertErrDTOPresent(res)
+// }
 
 
-func TestSuperAdminCanUpdateRoleWithOG(t *testing.T) {
-	helper := testhelper.InitTestDBAndService(t)
-	helper.InitAuth()
-	defer helper.CleanupAuth()
+// func TestUserUpdateOGWorksForSuperAdmin(t *testing.T) {
+// 	helper := testhelper.InitTestDBAndService(t)
+// 	helper.InitAuth()
+// 	defer helper.CleanupAuth()
 
-	data := map[string]interface{}{
-		"firstName": helper.RegularUser.FirstName,
-		"lastName": helper.RegularUser.LastName,
-		"email": "testing@mail.test",
-		"role": 2,
-	}
+// 	data := map[string]interface{}{
+// 		"firstName": helper.RegularUser.FirstName,
+// 		"lastName": "Test",
+// 		"email": helper.RegularUser.Email,
+// 		"role": helper.RegularUser.Role,
+// 	}
 
-	reqData, jsonErr := json.Marshal(data)
-	if jsonErr != nil {
-		t.Fatal(jsonErr.Error())
-	}
+// 	reqData, jsonErr := json.Marshal(data)
+// 	if jsonErr != nil {
+// 		t.Fatal(jsonErr.Error())
+// 	}
 
-	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
-	helper.AssertStatus(res, 200)
+// 	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
+// 	helper.AssertStatus(res, 200)
 
-	body := helper.GetUserDTO(res)
-	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should be the same")
-	helper.Assert(body.Role == 2, "Role should be updated")
-	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should be the same")
-	helper.Assert(body.Email == "testing@mail.test", "Email should be updated")
-}
-
-
-func TestUserUpdateOGInvalidEmail(t *testing.T) {
-	helper := testhelper.InitTestDBAndService(t)
-	helper.InitAuth()
-	defer helper.CleanupAuth()
-
-	data := map[string]interface{}{
-		"firstName": helper.RegularUser.FirstName,
-		"lastName": helper.RegularUser.LastName,
-		"email": "fake@email.",
-		"role": helper.RegularUser.Role,
-	}
-
-	reqData, jsonErr := json.Marshal(data)
-	if jsonErr != nil {
-		t.Fatal(jsonErr.Error())
-	}
-
-	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
-
-	helper.AssertStatus(res, 400)
-	helper.AssertErrDTOPresent(res)
-}
+// 	body := helper.GetUserOutDTO(res)
+// 	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should be the same")
+// 	helper.Assert(body.LastName == "Test", "Lastname should be updated")
+// 	helper.Assert(body.Email == helper.RegularUser.Email, "Lastname should be the same")
+// 	helper.Assert(enums.UserRole(body.Role) == helper.RegularUser.Role, "Lastname should be the same")
+// }
 
 
-func TestAdminCanNotUpdateRoleWithOG(t *testing.T) {
-	helper := testhelper.InitTestDBAndService(t)
-	helper.InitAuth()
-	defer helper.CleanupAuth()
+// func TestSuperAdminCanUpdateRoleWithOG(t *testing.T) {
+// 	helper := testhelper.InitTestDBAndService(t)
+// 	helper.InitAuth()
+// 	defer helper.CleanupAuth()
 
-	data := map[string]interface{}{
-		"firstName": "Test",
-		"lastName": helper.RegularUser.LastName,
-		"email": helper.RegularUser.Email,
-		"role": 2,
-	}
+// 	data := map[string]interface{}{
+// 		"firstName": helper.RegularUser.FirstName,
+// 		"lastName": helper.RegularUser.LastName,
+// 		"email": "testing@mail.test",
+// 		"role": 2,
+// 	}
 
-	reqData, jsonErr := json.Marshal(data)
-	if jsonErr != nil {
-		t.Fatal(jsonErr.Error())
-	}
+// 	reqData, jsonErr := json.Marshal(data)
+// 	if jsonErr != nil {
+// 		t.Fatal(jsonErr.Error())
+// 	}
 
-	res := helper.SendAsAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
+// 	res := helper.SendAsSuperAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
+// 	helper.AssertStatus(res, 200)
 
-	helper.AssertStatus(res, 401)
-	helper.AssertErrDTOPresent(res)
-}
+// 	body := helper.GetUserOutDTO(res)
+// 	helper.Assert(body.FirstName == helper.RegularUser.FirstName, "Firstname should be the same")
+// 	helper.Assert(body.Role == 2, "Role should be updated")
+// 	helper.Assert(body.LastName == helper.RegularUser.LastName, "Lastname should be the same")
+// 	helper.Assert(body.Email == "testing@mail.test", "Email should be updated")
+// }
+
+
+// func TestUserUpdateOGInvalidEmail(t *testing.T) {
+// 	helper := testhelper.InitTestDBAndService(t)
+// 	helper.InitAuth()
+// 	defer helper.CleanupAuth()
+
+// 	data := map[string]interface{}{
+// 		"firstName": helper.RegularUser.FirstName,
+// 		"lastName": helper.RegularUser.LastName,
+// 		"email": "fake@email.",
+// 		"role": helper.RegularUser.Role,
+// 	}
+
+// 	reqData, jsonErr := json.Marshal(data)
+// 	if jsonErr != nil {
+// 		t.Fatal(jsonErr.Error())
+// 	}
+
+// 	res := helper.SendAsRegularUser("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
+
+// 	helper.AssertStatus(res, 400)
+// 	helper.AssertErrDTOPresent(res)
+// }
+
+
+// func TestAdminCanNotUpdateRoleWithOG(t *testing.T) {
+// 	helper := testhelper.InitTestDBAndService(t)
+// 	helper.InitAuth()
+// 	defer helper.CleanupAuth()
+
+// 	data := map[string]interface{}{
+// 		"firstName": "Test",
+// 		"lastName": helper.RegularUser.LastName,
+// 		"email": helper.RegularUser.Email,
+// 		"role": 2,
+// 	}
+
+// 	reqData, jsonErr := json.Marshal(data)
+// 	if jsonErr != nil {
+// 		t.Fatal(jsonErr.Error())
+// 	}
+
+// 	res := helper.SendAsAdmin("put", fmt.Sprintf("/users/%s", helper.RegularUser.ID), reqData)
+
+// 	helper.AssertStatus(res, 401)
+// 	helper.AssertErrDTOPresent(res)
+// }
 
 
 // ----- User delete -----

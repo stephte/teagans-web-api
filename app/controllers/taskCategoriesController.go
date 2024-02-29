@@ -5,7 +5,6 @@ import (
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -28,8 +27,7 @@ func CreateTaskCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, tcDTO)
-	w.WriteHeader(http.StatusCreated)
+	httpUtils.RenderJSON(w, tcDTO, 201)
 }
 
 func UpdateTaskCategory(w http.ResponseWriter, r *http.Request) {
@@ -51,7 +49,7 @@ func UpdateTaskCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, tcDTO)
+	httpUtils.RenderJSON(w, tcDTO, 200)
 }
 
 func DeleteTaskCategory(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +64,7 @@ func DeleteTaskCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 // add query params to filter by status and if 'cleared' or not
@@ -84,5 +82,5 @@ func GetTaskCategoryTasks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, taskListDTO)
+	httpUtils.RenderJSON(w, taskListDTO, 200)
 }

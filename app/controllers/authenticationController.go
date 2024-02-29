@@ -4,7 +4,6 @@ import (
 	"teagans-web-api/app/utilities/httpUtils"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
-	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -33,14 +32,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	httpUtils.SetAuthCookie(w, tokenDTO.Token, maxAge, false)
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 
 func Logout(w http.ResponseWriter, r *http.Request) {
 	httpUtils.DeleteAuthCookie(w, false)
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 
@@ -61,7 +60,7 @@ func StartPWReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, map[string]string{"msg": "Password reset email will be sent if a user with that email exists."})
+	httpUtils.RenderJSON(w, map[string]string{"msg": "Password reset email will be sent if a user with that email exists."}, 200)
 }
 
 
@@ -88,7 +87,7 @@ func ConfirmPasswordResetToken(w http.ResponseWriter, r *http.Request) {
 
 	httpUtils.SetAuthCookie(w, tokenDTO.Token, maxAge, true)
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 
@@ -114,5 +113,5 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	httpUtils.DeleteAuthCookie(w, true)
 	httpUtils.SetAuthCookie(w, tokenDTO.Token, maxAge, false)
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }

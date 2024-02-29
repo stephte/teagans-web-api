@@ -5,7 +5,6 @@ import (
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
 )
@@ -25,7 +24,7 @@ func UsersIndex(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, result)
+	httpUtils.RenderJSON(w, result, 200)
 }
 
 
@@ -41,7 +40,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, userDTO)
+	httpUtils.RenderJSON(w, userDTO, 200)
 }
 
 
@@ -63,8 +62,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, userDTO)
-	w.WriteHeader(http.StatusCreated)
+	httpUtils.RenderJSON(w, userDTO, 201)
 }
 
 
@@ -92,7 +90,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, userDTO)
+	httpUtils.RenderJSON(w, userDTO, 200)
 }
 
 
@@ -117,7 +115,7 @@ func UpdateUserOG(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, userDTO)
+	httpUtils.RenderJSON(w, userDTO, 200)
 }
 
 
@@ -134,7 +132,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 
@@ -150,5 +148,5 @@ func GetUserTaskCategories(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, categoriesDTO)
+	httpUtils.RenderJSON(w, categoriesDTO, 200)
 }

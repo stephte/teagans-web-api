@@ -5,7 +5,6 @@ import (
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
 )
@@ -27,8 +26,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, taskDTO)
-	w.WriteHeader(http.StatusCreated)
+	httpUtils.RenderJSON(w, taskDTO, 201)
 }
 
 func GetTask(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +41,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, taskOutDTO)
+	httpUtils.RenderJSON(w, taskOutDTO, 200)
 }
 
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
@@ -65,7 +63,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.JSON(w, r, taskOutDTO)
+	httpUtils.RenderJSON(w, taskOutDTO, 200)
 }
 
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
@@ -80,5 +78,5 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }

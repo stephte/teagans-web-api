@@ -4,7 +4,6 @@ import (
 	"teagans-web-api/app/utilities/httpUtils"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
-	"github.com/go-chi/render"
 	"net/http"
 	"context"
 	"strings"
@@ -71,7 +70,7 @@ func SetCORS(next http.Handler) (http.Handler) {
     	w.Header().Add("Access-Control-Allow-Credentials", "true")
 
     	if r.Method == "OPTIONS" {
-	        render.NoContent(w, r)
+	        w.WriteHeader(http.StatusNoContent)
 	        return
 	    }
 

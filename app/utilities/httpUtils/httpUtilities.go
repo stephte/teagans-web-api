@@ -2,18 +2,36 @@ package httpUtils
 
 import (
 	"teagans-web-api/app/services/dtos"
-	"github.com/go-chi/render"
+	"encoding/json"
 	"net/http"
 	"strings"
+	"bytes"
 )
+
+func RenderJSON(w http.ResponseWriter, data interface{}, status int) {
+	buf := &bytes.Buffer{}
+	encoder := json.NewEncoder(buf)
+	if err := encoder.Encode(data); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if status == 0 {
+		status = 200
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write(buf.Bytes())
+}
 
 func RenderErrorJSON(w http.ResponseWriter, r *http.Request, errorDTO dtos.ErrorDTO) {
 	if errorDTO.Status == 0 {
 		errorDTO.Status = 400
 	}
 
-	w.WriteHeader(errorDTO.Status)
-	render.JSON(w, r, errorDTO)
+	// w.WriteHeader(errorDTO.Status)
+	RenderJSON(w, errorDTO, errorDTO.Status)
 }
 
 
