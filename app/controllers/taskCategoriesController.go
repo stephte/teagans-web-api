@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
 func CreateTaskCategory(w http.ResponseWriter, r *http.Request) {
@@ -68,13 +69,16 @@ func DeleteTaskCategory(w http.ResponseWriter, r *http.Request) {
 	render.NoContent(w, r)
 }
 
+// add query params to filter by status and if 'cleared' or not
 func GetTaskCategoryTasks(w http.ResponseWriter, r *http.Request) {
 	categoryIdStr := chi.URLParam(r, "categoryId")
+	statusQuery := r.URL.Query().Get("status")
+	getCleared, _ := strconv.ParseBool(r.URL.Query().Get("cleared")) // always assume false if not true, not required that this be passed in
 
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.TaskCategoryService{BaseService: baseService}
 
-	taskListDTO, errDTO := service.GetTaskCategoryTasks(categoryIdStr)
+	taskListDTO, errDTO := service.GetTaskCategoryTasks(categoryIdStr, statusQuery, getCleared)
 	if errDTO.Exists() {
 		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return

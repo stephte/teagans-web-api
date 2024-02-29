@@ -7,6 +7,7 @@ import (
 	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/models"
+	"strings"
 )
 
 type TaskCategoryService struct {
@@ -79,7 +80,7 @@ func(this TaskCategoryService) DeleteTaskCategory(taskCategoryIdStr string) dtos
 	return dtos.ErrorDTO{}
 }
 
-func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr string) (dtos.TaskListDTO, dtos.ErrorDTO) {
+func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr, statusQuery string, getCleared bool) (dtos.TaskListDTO, dtos.ErrorDTO) {
 	err := this.setTaskCategory(categoryIdStr)
 	if err != nil {
 		return dtos.TaskListDTO{}, dtos.CreateErrorDTO(err, 0, false)
@@ -89,8 +90,10 @@ func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr string) (dtos.
 		return dtos.TaskListDTO{}, dtos.AccessDeniedError(false)
 	}
 
+	statusList := genStatusList(statusQuery)
+
 	var tasks []models.Task
-	this.db.Model(&this.taskCategory).Order("priority desc").Association("Tasks").Find(&tasks)
+	this.db.Where("task_category_id = ? AND cleared = ? AND status IN ?", this.taskCategory.ID, getCleared, statusList).Order("priority desc").Find(&tasks)
 
 	rv := dtos.TaskListDTO{
 		Tasks: mappers.MapTasksToTaskOutDTOs(tasks),
@@ -124,4 +127,26 @@ func (this TaskCategoryService) findTaskCategory(id uuid.UUID) (models.TaskCateg
 	}
 
 	return rv, nil
+}
+
+func genStatusList(statusQuery string) []enums.TaskStatus {
+	var statusList []enums.TaskStatus
+	if statusQuery == "" || strings.ToLower(statusQuery) == "all" {
+		// create arr of all statuses
+		max := enums.TaskStatusCount()
+		for i := 1; i <= max; i++ {
+			statusList = append(statusList, enums.TaskStatus(i))
+		}
+	} else {
+		// process status query string:
+		statuses := strings.Split(statusQuery, ",")
+		for _, status := range statuses {
+			statusEnum, exists := enums.ParseTaskStatusString(status)
+			if exists {
+				statusList = append(statusList, statusEnum)
+			}
+		}
+	}
+
+	return statusList
 }

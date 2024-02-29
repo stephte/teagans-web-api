@@ -56,7 +56,7 @@ func(this *Router) defineRoutes() {
 
 			r.Get("/", controllers.GetUser)
 			r.Patch("/", controllers.UpdateUser)
-			r.Put("/", controllers.UpdateUserOG)
+			// r.Put("/", controllers.UpdateUserOG)
 			r.Delete("/", controllers.DeleteUser)
 
 			r.Get("/task-categories", controllers.GetUserTaskCategories)

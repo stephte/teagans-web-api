@@ -47,3 +47,7 @@ func ParseTaskStatusString(str string) (TaskStatus, bool) {
 		return TODO, false
 	}
 }
+
+func TaskStatusCount() int {
+	return len(statusStrings)
+}
