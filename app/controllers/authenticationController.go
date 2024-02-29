@@ -60,7 +60,9 @@ func StartPWReset(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpUtils.RenderJSON(w, map[string]string{"msg": "Password reset email will be sent if a user with that email exists."}, 200)
+	rv := map[string]string{"msg": "Password reset email will be sent if a user with that email exists."}
+
+	httpUtils.RenderJSON(w, rv, 200)
 }
 
 
