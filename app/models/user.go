@@ -1,7 +1,7 @@
 package models
 
 import (
-	"teagans-web-api/app/utilities/interfaceUtils"
+	intrfaceUtils "teagans-web-api/app/utilities/intrface"
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/auth"
 	"teagans-web-api/app/utilities"
@@ -49,7 +49,7 @@ func(this *User) BeforeCreate(tx *gorm.DB) error {
 
 
 func(this *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	typ := interfaceUtils.GetType(tx.Statement.Dest)
+	typ := intrfaceUtils.GetType(tx.Statement.Dest)
 	
 	// normal User update is assumed to be with a map
 	if typ == "map[string]interface {}" {

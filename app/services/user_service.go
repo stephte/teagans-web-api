@@ -1,7 +1,7 @@
 package services
 
 import (
-	"teagans-web-api/app/utilities/interfaceUtils"
+	intrfaceUtils "teagans-web-api/app/utilities/intrface"
 	"teagans-web-api/app/services/mappers"
 	"teagans-web-api/app/services/emails"
 	"teagans-web-api/app/utilities/enums"
@@ -63,7 +63,7 @@ func (this UserService) GetUsers(dto dtos.PaginationDTO, path string) (dtos.Page
 }
 
 
-// takes in CreateUserDTO, returns UserDTO
+// takes in CreateUserDTO, returns UserOutDTO
 func (this UserService) CreateUser(dto dtos.CreateUserDTO) (dtos.UserOutDTO, dtos.ErrorDTO) {
 	user := mappers.MapCreateUserDTOToUser(dto)
 
@@ -79,9 +79,9 @@ func (this UserService) CreateUser(dto dtos.CreateUserDTO) (dtos.UserOutDTO, dto
 		return dtos.UserOutDTO{}, dtos.CreateErrorDTO(createErr, 0, false)
 	}
 
-	go this.sendSignupEmail(user.Email, user.FirstName)
-
 	rv := mappers.MapUserToUserOutDTO(user)
+
+	go this.sendSignupEmail(user.Email, user.FirstName)
 
 	return rv, dtos.ErrorDTO{}
 }
@@ -90,7 +90,7 @@ func (this UserService) CreateUser(dto dtos.CreateUserDTO) (dtos.UserOutDTO, dto
 // saved via a Map thats validated
 func (this UserService) UpdateUser(userIdStr string, data map[string]interface{}) (dtos.UserOutDTO, dtos.ErrorDTO) {
 	// validate User update data
-	validatedData, dataErr := interfaceUtils.ValidateMapWithStruct(data, dtos.UserInDTO{})
+	validatedData, dataErr := intrfaceUtils.ValidateMapWithStruct(data, dtos.UserInDTO{})
 	if dataErr != nil {
 		return dtos.UserOutDTO{}, dtos.CreateErrorDTO(dataErr, 0, false)
 	}

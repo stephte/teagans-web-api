@@ -1,7 +1,7 @@
 package services
 
 import (
-	"teagans-web-api/app/utilities/interfaceUtils"
+	intrfaceUtils "teagans-web-api/app/utilities/intrface"
 	"teagans-web-api/app/services/mappers"
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
@@ -59,7 +59,7 @@ func(this TaskService) UpdateTask(data map[string]interface{}, taskIdStr string)
 	}
 
 	// convert dto to a map
-	taskMap, mapErr := interfaceUtils.ValidateMapWithStruct(data, dtos.TaskInDTO{})
+	taskMap, mapErr := intrfaceUtils.ValidateMapWithStruct(data, dtos.TaskInDTO{})
 	if mapErr != nil {
 		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(mapErr, 0, false)
 	}

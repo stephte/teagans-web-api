@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"teagans-web-api/app/utilities/httpUtils"
+	httpUtils "teagans-web-api/app/utilities/http"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
 	"github.com/go-chi/chi/v5"

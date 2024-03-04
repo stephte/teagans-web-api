@@ -1,4 +1,4 @@
-package interfaceUtils
+package intrface
 
 import(
 	"teagans-web-api/app/utilities/enums"

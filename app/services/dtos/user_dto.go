@@ -1,7 +1,7 @@
 package dtos
 
 import (
-	// "teagans-web-api/app/utilities/interfaceUtils"
+	// intrfaceUtils "teagans-web-api/app/utilities/intrface"
 	// "strings"
 	// "errors"
 	// "fmt"
@@ -42,7 +42,7 @@ type CreateUserDTO struct {
 // 			continue
 // 		}
 
-// 		typ := interfaceUtils.GetType(value)
+// 		typ := intrfaceUtils.GetType(value)
 
 // 		// custom check for role, since it is an enum
 // 		if capitalKey == "Role" {
@@ -52,7 +52,7 @@ type CreateUserDTO struct {
 // 			}
 // 		}
 
-// 		validKey, typErr := interfaceUtils.CheckKeyValue(strct, capitalKey, typ)
+// 		validKey, typErr := intrfaceUtils.CheckKeyValue(strct, capitalKey, typ)
 
 // 		if typErr != nil {
 // 			return rv, typErr

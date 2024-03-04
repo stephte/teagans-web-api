@@ -8,7 +8,7 @@ import (
 
 // first file passed should be main template
 func parseFiles(files ...string) (*template.Template, error) {
-	filesArr := append(files, "app/templates/smtpInfo.gohtml")
+	filesArr := append(files, "app/templates/smtp_info.gohtml")
 	return template.ParseFiles(filesArr...)
 }
 

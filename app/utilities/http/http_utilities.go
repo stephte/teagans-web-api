@@ -1,4 +1,4 @@
-package httpUtils
+package http
 
 import (
 	"teagans-web-api/app/services/dtos"
@@ -28,10 +28,8 @@ func RenderErrorJSON(w http.ResponseWriter, r *http.Request, errorDTO dtos.Error
 		errorDTO.Status = 400
 	}
 
-	// w.WriteHeader(errorDTO.Status)
 	RenderJSON(w, errorDTO, errorDTO.Status)
 }
-
 
 func GetRequestPath(r *http.Request) string {
 	url := r.URL.String()
