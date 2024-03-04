@@ -6,7 +6,6 @@ import (
 	"teagans-web-api/app/controllers"
 	"teagans-web-api/app/services"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
 	"os/signal"
@@ -54,16 +53,41 @@ func(this *Router) defineRoutes() {
 		r.Route("/{userId}", func(r chi.Router) {
 			r.Use(middle.ValidateJWT)
 
-			r.Get("/", controllers.FindUser)
+			r.Get("/", controllers.GetUser)
 			r.Patch("/", controllers.UpdateUser)
-			r.Put("/", controllers.UpdateUserOG)
+			// r.Put("/", controllers.UpdateUserOG)
 			r.Delete("/", controllers.DeleteUser)
+
+			r.Get("/task-categories", controllers.GetUserTaskCategories)
 		})
 	})
 
 	r.Route("/download", func(r chi.Router) {
 		r.Use(middle.ValidateJWT)	
 		r.Get("/", controllers.DownloadVideo)
+	})
+
+	r.Route("/task-categories", func(r chi.Router) {
+		r.Use(middle.ValidateJWT)
+
+		r.Post("/", controllers.CreateTaskCategory)
+		r.Route("/{categoryId}", func(r chi.Router) {
+			r.Patch("/", controllers.UpdateTaskCategory)
+			r.Delete("/", controllers.DeleteTaskCategory)
+
+			r.Get("/tasks", controllers.GetTaskCategoryTasks)
+		})
+	})
+
+	r.Route("/tasks", func(r chi.Router) {
+		r.Use(middle.ValidateJWT)
+
+		r.Post("/", controllers.CreateTask)
+		r.Route("/{taskId}", func(r chi.Router) {
+			r.Get("/", controllers.GetTask)
+			r.Patch("/", controllers.UpdateTask)
+			r.Delete("/", controllers.DeleteTask)
+		})
 	})
 }
 
@@ -126,7 +150,6 @@ func SetupRouter(logger zerolog.Logger, db *gorm.DB, env string) Router {
 	r := chi.NewRouter()
 
 	r.Use(middleware.Logger)
-	r.Use(render.SetContentType(render.ContentTypeJSON))
 	r.Use(middleware.Recoverer)
 
 	// defined here since it needs access to the database connection

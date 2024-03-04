@@ -1,10 +1,9 @@
 package middlewares
 
 import (
-	"teagans-web-api/app/utilities/http_utils"
+	httpUtils "teagans-web-api/app/utilities/http"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
-	"github.com/go-chi/render"
 	"net/http"
 	"context"
 	"strings"
@@ -22,7 +21,7 @@ func ValidateJWT(next http.Handler) (http.Handler) {
 
 		ctx, errDTO := handleErrDTO(jwtValid, tokenErrDTO, r)
 		if errDTO.Exists() {
-			http_utils.RenderErrorJSON(w, r, errDTO)
+			httpUtils.RenderErrorJSON(w, r, errDTO)
 			return
 		}
 
@@ -40,7 +39,7 @@ func ValidatePWResetJWT(next http.Handler) (http.Handler) {
 
 		ctx, errDTO := handleErrDTO(jwtValid, tokenErrDTO, r)
 		if errDTO.Exists() {
-			http_utils.RenderErrorJSON(w, r, errDTO)
+			httpUtils.RenderErrorJSON(w, r, errDTO)
 			return
 		}
 	
@@ -71,7 +70,7 @@ func SetCORS(next http.Handler) (http.Handler) {
     	w.Header().Add("Access-Control-Allow-Credentials", "true")
 
     	if r.Method == "OPTIONS" {
-	        render.NoContent(w, r)
+	        w.WriteHeader(http.StatusNoContent)
 	        return
 	    }
 
@@ -87,7 +86,7 @@ func getAuthTokenAndService(r *http.Request, pwReset bool) (string, services.Aut
 
 	// if auth token not in headers, get it from cookies
 	if jwt == "" {
-		authCookie, noCookieErr := http_utils.GetAuthCookie(r, pwReset)
+		authCookie, noCookieErr := httpUtils.GetAuthCookie(r, pwReset)
 		if noCookieErr == nil {
 			token = authCookie.Value
 		}

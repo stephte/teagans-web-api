@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"teagans-web-api/app/utilities/http_utils"
+	httpUtils "teagans-web-api/app/utilities/http"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
 )
@@ -14,22 +13,22 @@ import (
 func UsersIndex(w http.ResponseWriter, r *http.Request) {
 	paginationDTO := r.Context().Value("paginationDTO").(dtos.PaginationDTO)
 
-	path := http_utils.GetRequestPath(r)
+	path := httpUtils.GetRequestPath(r)
 
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
 	service := services.UserService{BaseService: baseService}
 
 	result, errDTO := service.GetUsers(paginationDTO, path)
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.JSON(w, r, result)
+	httpUtils.RenderJSON(w, result, 200)
 }
 
 
-func FindUser(w http.ResponseWriter, r *http.Request) {
+func GetUser(w http.ResponseWriter, r *http.Request) {
 	userIdStr := chi.URLParam(r, "userId")
 
 	baseService := r.Context().Value("BaseService").(*services.BaseService)
@@ -37,11 +36,11 @@ func FindUser(w http.ResponseWriter, r *http.Request) {
 
 	userDTO, errDTO := service.GetUser(userIdStr)
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.JSON(w, r, userDTO)
+	httpUtils.RenderJSON(w, userDTO, 200)
 }
 
 
@@ -49,7 +48,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.CreateUserDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
 		return
 	}
 
@@ -59,11 +58,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	userDTO, errDTO := service.CreateUser(dto)
 
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.JSON(w, r, userDTO)
+	httpUtils.RenderJSON(w, userDTO, 201)
 }
 
 
@@ -77,7 +76,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var data map[string]interface{}
 	bindErr := json.NewDecoder(r.Body).Decode(&data)
 	if bindErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
 		return
 	}
 
@@ -87,11 +86,11 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userDTO, errDTO := service.UpdateUser(userIdStr, data)
 
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.JSON(w, r, userDTO)
+	httpUtils.RenderJSON(w, userDTO, 200)
 }
 
 
@@ -99,10 +98,10 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 func UpdateUserOG(w http.ResponseWriter, r *http.Request) {
 	userIdStr := chi.URLParam(r, "userId")
 
-	var dto dtos.UserDTO
+	var dto dtos.UserInDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
 		return
 	}
 
@@ -112,11 +111,11 @@ func UpdateUserOG(w http.ResponseWriter, r *http.Request) {
 	userDTO, errDTO := service.UpdateUserOG(userIdStr, dto)
 
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.JSON(w, r, userDTO)
+	httpUtils.RenderJSON(w, userDTO, 200)
 }
 
 
@@ -129,9 +128,25 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	errDTO := service.DeleteUser(userIdStr)
 
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+
+func GetUserTaskCategories(w http.ResponseWriter, r *http.Request) {
+	userIdStr := chi.URLParam(r, "userId")
+
+	baseService := r.Context().Value("BaseService").(*services.BaseService)
+	service := services.UserService{BaseService: baseService}
+
+	categoriesDTO, errDTO := service.GetUserTaskCategories(userIdStr)
+	if errDTO.Exists() {
+		httpUtils.RenderErrorJSON(w, r, errDTO)
+		return
+	}
+
+	httpUtils.RenderJSON(w, categoriesDTO, 200)
 }

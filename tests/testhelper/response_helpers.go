@@ -8,8 +8,8 @@ import (
 
 // ------ User specific helpers -----
 
-func(this TestHelper) GetUserDTO(res *http.Response) dtos.UserDTO {
-	user := dtos.UserDTO{}
+func(this TestHelper) GetUserOutDTO(res *http.Response) dtos.UserOutDTO {
+	user := dtos.UserOutDTO{}
 	jsonErr := json.Unmarshal(this.GetResponseBody(res), &user)
 	if jsonErr != nil {
 		this.t.Error(jsonErr)

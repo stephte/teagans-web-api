@@ -27,7 +27,7 @@ func(this *UUID) Scan(value interface{}) error {
 	return nil
 }
 
-func (this UUID) Value() (driver.Value, error) {
+func(this UUID) Value() (driver.Value, error) {
 	if this == UUID(uuid.UUID{}) {
 		return nil, nil
 	}
@@ -42,11 +42,24 @@ func(this UUID) String() string {
 	return uuid.UUID(this).String()
 }
 
-func (this UUID) MarshalJSON() ([]byte, error) {
+func(this UUID) Exists() bool {
+	return this.String() != ""
+}
+
+func Parse(uuidStr string) (UUID, error) {
+	u, err := uuid.Parse(uuidStr)
+	if err != nil {
+		return New(), err
+	}
+
+	return UUID(u), nil
+}
+
+func(this UUID) MarshalJSON() ([]byte, error) {
     return json.Marshal(this.String())
 }
 
-func (this *UUID) UnmarshalJSON(byt []byte) error {
+func(this *UUID) UnmarshalJSON(byt []byte) error {
 	var str string
 	err := json.Unmarshal(byt, &str)
 	if err != nil {
