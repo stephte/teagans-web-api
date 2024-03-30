@@ -93,7 +93,7 @@ func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr, statusQuery s
 	statusList := genStatusList(statusQuery)
 
 	var tasks []models.Task
-	this.db.Where("task_category_id = ? AND cleared = ? AND status IN ?", this.taskCategory.ID, getCleared, statusList).Order("priority desc").Find(&tasks)
+	this.db.Where("task_category_id = ? AND cleared = ? AND status IN ?", this.taskCategory.ID, getCleared, statusList).Order("position asc, priority desc").Find(&tasks)
 
 	rv := dtos.TaskListDTO{
 		Tasks: mappers.MapTasksToTaskOutDTOs(tasks),

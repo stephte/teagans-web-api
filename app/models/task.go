@@ -16,6 +16,7 @@ type Task struct {
 	Details				string
 	Status				enums.TaskStatus
 	Priority			enums.TaskPriority
+	Position			int64
 	Effort				int64
 	Cleared				bool				`gorm:"default:false;"`
 	TaskNumber			int64				`gorm:"uniqueIndex:cattasknumndx;"`

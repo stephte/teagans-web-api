@@ -64,7 +64,7 @@ func(this TaskService) UpdateTask(data map[string]interface{}, taskIdStr string)
 		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(mapErr, 0, false)
 	}
 
-	if updateErr := this.db.Model(&this.task).Updates(taskMap).Error; updateErr != nil {
+	if updateErr := this.db.Model(&this.task).Omit("task_category_id, TaskCategory").Updates(taskMap).Error; updateErr != nil {
 		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(updateErr, 0, false)
 	}
 
