@@ -11,7 +11,7 @@ type TaskInDTO struct {
 	Details				string				`json:"details"`
 	Status				int64				`json:"status" enum:"TaskStatus"`
 	Priority			int64				`json:"priority" enum:"TaskPriority"`
-	Position			int64
+	Position			int64				`json:"position"`
 	Effort				int64				`json:"effort"`
 	Cleared				bool				`json:"cleared"`
 }
