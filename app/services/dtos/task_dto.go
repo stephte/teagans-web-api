@@ -8,7 +8,8 @@ type TaskInDTO struct {
 	TaskCategoryID		uuid.UUID			`json:"taskCategoryID"`
 
 	Title				string				`json:"title"`
-	Details				string				`json:"details"`
+	DetailHtml			string				`json:"detailHtml"`
+	DetailJson			string				`json:"detailJson"`
 	Status				int64				`json:"status" enum:"TaskStatus"`
 	Priority			int64				`json:"priority" enum:"TaskPriority"`
 	Position			int64				`json:"position"`

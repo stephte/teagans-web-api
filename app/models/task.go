@@ -13,7 +13,10 @@ type Task struct {
 	TaskCategory		TaskCategory
 
 	Title				string				`gorm:"default:null;not null;"`
-	Details				string
+
+	DetailHtml			string
+	DetailJson			string
+
 	Status				enums.TaskStatus
 	Priority			enums.TaskPriority
 	Position			int64

@@ -5,6 +5,7 @@ import (
 	"teagans-web-api/app/services/mappers"
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
+	"github.com/microcosm-cc/bluemonday"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/models"
 )
@@ -62,6 +63,14 @@ func(this TaskService) UpdateTask(data map[string]interface{}, taskIdStr string)
 	taskMap, mapErr := intrfaceUtils.ValidateMapWithStruct(data, dtos.TaskInDTO{})
 	if mapErr != nil {
 		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(mapErr, 0, false)
+	}
+
+	// sanitize detailHtml if it exists
+	html, ok := taskMap["DetailHtml"]
+	if ok {
+		htmlStr, _ := html.(string)
+		sanitizedHtml := bluemonday.UGCPolicy().Sanitize(htmlStr)
+		taskMap["DetailHtml"] = sanitizedHtml
 	}
 
 	if updateErr := this.db.Model(&this.task).Omit("task_category_id, TaskCategory").Updates(taskMap).Error; updateErr != nil {
