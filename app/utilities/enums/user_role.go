@@ -1,6 +1,7 @@
 package enums
 
 import (
+	"teagans-web-api/app/utilities"
 	"strings"
 )
 
@@ -12,30 +13,41 @@ const (
 	SUPERADMIN
 )
 
-var UserRolesArr []UserRole = []UserRole{REGULAR, ADMIN, SUPERADMIN}
-
 var roleStrings = []string{"regular", "admin", "superadmin"}
 
 func(role UserRole) String() string {
-	return roleStrings[role]
+	if role.IsValid() {
+		return strings.Title(roleStrings[role-1])
+	}
+
+	return ""
 }
 
 func(role UserRole) IsValid() bool {
-	return int(role) <= len(roleStrings) && int(role) > 0
+	return int(role) > 0 && int(role) <= len(roleStrings)
 }
 
-var roleMap = map[string]UserRole {
-	"regular":		REGULAR,
-	"admin":		ADMIN,
-	"superadmin":	SUPERADMIN,
+func NewUserRole(num int64) (UserRole, bool) {
+	rv := UserRole(num)
+
+	if rv.IsValid() {
+		return rv, true
+	} else {
+		return REGULAR, false
+	}
 }
 
-func ParseRoleString(roleStr string) (UserRole, bool) {
-	role, ok := roleMap[strings.ToLower(roleStr)]
-	return role, ok
+func ParseUserRoleString(str string) (UserRole, bool) {
+	ndx := utilities.IndexOf(roleStrings, strings.ToLower(str))
+
+	if ndx >= 0 {
+		return UserRole(ndx + 1), true
+	} else {
+		return REGULAR, false
+	}
 }
 
-func ValToRole(val interface{}) (UserRole, bool) {
+func ValToUserRole(val interface{}) (UserRole, bool) {
 	var roleInt int
 	var roleFloat32 float32
 	var roleFloat64 float64
@@ -56,7 +68,7 @@ func ValToRole(val interface{}) (UserRole, bool) {
 	}
 	roleStr, ok = val.(string)
 	if ok {
-		return ParseRoleString(roleStr)
+		return ParseUserRoleString(roleStr)
 	}
 
 	return REGULAR, false

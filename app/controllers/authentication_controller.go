@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"teagans-web-api/app/utilities/http_utils"
+	httpUtils "teagans-web-api/app/utilities/http"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/services"
-	"github.com/go-chi/render"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -15,7 +14,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.LoginDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
 		return
 	}
 
@@ -23,7 +22,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	service := services.LoginService{BaseService: baseService}
 	tokenDTO, maxAge, errDTO := service.LoginUser(dto, true)
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
@@ -31,16 +30,16 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-CSRF-Token", tokenDTO.CSRF)
 	w.Header().Set("Expires", strconv.FormatInt(maxAge, 10))
 
-	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge, false)
+	httpUtils.SetAuthCookie(w, tokenDTO.Token, maxAge, false)
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	http_utils.DeleteAuthCookie(w, false)
+	httpUtils.DeleteAuthCookie(w, false)
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 
@@ -48,7 +47,7 @@ func StartPWReset(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.EmailDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
 		return
 	}
 
@@ -57,11 +56,13 @@ func StartPWReset(w http.ResponseWriter, r *http.Request) {
 
 	errDTO := service.StartPWReset(dto)
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
-	render.JSON(w, r, map[string]string{"msg": "Password reset email will be sent if a user with that email exists."})
+	rv := map[string]string{"msg": "Password reset email will be sent if a user with that email exists."}
+
+	httpUtils.RenderJSON(w, rv, 200)
 }
 
 
@@ -69,7 +70,7 @@ func ConfirmPasswordResetToken(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.ConfirmResetTokenDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
 		return
 	}
 
@@ -78,7 +79,7 @@ func ConfirmPasswordResetToken(w http.ResponseWriter, r *http.Request) {
 
 	tokenDTO, maxAge, errDTO := service.ConfirmResetToken(dto)
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 		return
 	}
 
@@ -86,9 +87,9 @@ func ConfirmPasswordResetToken(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-CSRF-Token", tokenDTO.CSRF)
 	w.Header().Set("Expires", strconv.FormatInt(maxAge, 10))
 
-	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge, true)
+	httpUtils.SetAuthCookie(w, tokenDTO.Token, maxAge, true)
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 
@@ -96,7 +97,7 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	var dto dtos.ResetPWDTO
 	bindErr := json.NewDecoder(r.Body).Decode(&dto)
 	if bindErr != nil {
-		http_utils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 400, false))
 		return
 	}
 
@@ -104,15 +105,15 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	service := services.LoginService{BaseService: baseService}
 	tokenDTO, maxAge, errDTO := service.UpdateUserPassword(dto)
 	if errDTO.Exists() {
-		http_utils.RenderErrorJSON(w, r, errDTO)
+		httpUtils.RenderErrorJSON(w, r, errDTO)
 	}
 
 	w.Header().Set("Authorization", fmt.Sprintf("Bearer: %s", tokenDTO.Token))
 	w.Header().Set("X-CSRF-Token", tokenDTO.CSRF)
 	w.Header().Set("Expires", strconv.FormatInt(maxAge, 10))
 
-	http_utils.DeleteAuthCookie(w, true)
-	http_utils.SetAuthCookie(w, tokenDTO.Token, maxAge, false)
+	httpUtils.DeleteAuthCookie(w, true)
+	httpUtils.SetAuthCookie(w, tokenDTO.Token, maxAge, false)
 
-	render.NoContent(w, r)
+	w.WriteHeader(http.StatusNoContent)
 }

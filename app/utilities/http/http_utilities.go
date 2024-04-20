@@ -1,22 +1,35 @@
-package http_utils
+package http
 
 import (
 	"teagans-web-api/app/services/dtos"
-	"github.com/go-chi/render"
+	"encoding/json"
 	"net/http"
 	"strings"
 )
+
+func RenderJSON(w http.ResponseWriter, data interface{}, status int) {
+	rvJson, jsonErr := json.Marshal(data)
+	if jsonErr != nil {
+		http.Error(w, jsonErr.Error(), http.StatusInternalServerError)
+	}
+
+	// default status to 200
+	if status == 0 {
+		status = 200
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write(rvJson)
+}
 
 func RenderErrorJSON(w http.ResponseWriter, r *http.Request, errorDTO dtos.ErrorDTO) {
 	if errorDTO.Status == 0 {
 		errorDTO.Status = 400
 	}
 
-	w.WriteHeader(errorDTO.Status)
-
-	render.JSON(w, r, errorDTO)
+	RenderJSON(w, errorDTO, errorDTO.Status)
 }
-
 
 func GetRequestPath(r *http.Request) string {
 	url := r.URL.String()
@@ -61,7 +74,7 @@ func GetAuthCookie(r *http.Request, pwReset bool) (*http.Cookie, error) {
 
 func getAuthCookieName(pwReset bool) string {
 	if pwReset {
-		return "yt-downloader-reset"
+		return "teagans-app-reset"
 	}
-	return "yt-downloader-auth"
+	return "teagans-app-auth"
 }

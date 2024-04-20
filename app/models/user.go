@@ -1,6 +1,7 @@
 package models
 
 import (
+	intrfaceUtils "teagans-web-api/app/utilities/intrface"
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/auth"
 	"teagans-web-api/app/utilities"
@@ -22,6 +23,8 @@ type User struct {
 	Password					string				`gorm:"-"`
 	EncryptedPassword			[]byte				`gorm:"not null"`
 	PasswordLastUpdated			int64
+
+	TaskCategories				[]TaskCategory
 }
 
 
@@ -46,7 +49,7 @@ func(this *User) BeforeCreate(tx *gorm.DB) error {
 
 
 func(this *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	typ := utilities.GetType(tx.Statement.Dest)
+	typ := intrfaceUtils.GetType(tx.Statement.Dest)
 	
 	// normal User update is assumed to be with a map
 	if typ == "map[string]interface {}" {
