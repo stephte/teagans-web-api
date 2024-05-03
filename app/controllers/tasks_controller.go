@@ -66,6 +66,26 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	httpUtils.RenderJSON(w, taskOutDTO, 200)
 }
 
+func UpdateTasks(w http.ResponseWriter, r *http.Request) {
+	var data dtos.TaskListInDTO
+	bindErr := json.NewDecoder(r.Body).Decode(&data)
+	if bindErr != nil {
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
+		return
+	}
+
+	baseService := r.Context().Value("BaseService").(*services.BaseService)
+	service := services.TaskService{BaseService: baseService}
+
+	taskListOutDTO, errDTO := service.UpdateTasks(data)
+	if errDTO.Exists() {
+		httpUtils.RenderErrorJSON(w, r, errDTO)
+		return
+	}
+
+	httpUtils.RenderJSON(w, taskListOutDTO, 200)
+}
+
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	taskIdStr := chi.URLParam(r, "taskId")
 

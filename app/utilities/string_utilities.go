@@ -1,6 +1,7 @@
 package utilities
 
 import (
+	"encoding/json"
 	"strings"
 	"unicode"
 	"regexp"
@@ -27,4 +28,9 @@ func ConvertToFilename(s string) string {
 	nonSpecialStr := removeAlphNumRegex.ReplaceAllString(s, " ")
 	lowerStr := strings.ToLower(nonSpecialStr)
 	return strings.Join(strings.Fields(lowerStr), "_")
+}
+
+func IsJson(jsnStr string) bool {
+	var jsn json.RawMessage
+	return json.Unmarshal([]byte(jsnStr), &jsn) == nil
 }

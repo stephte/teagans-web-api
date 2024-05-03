@@ -7,7 +7,9 @@ import (
 	"teagans-web-api/app/utilities/uuid"
 	"github.com/microcosm-cc/bluemonday"
 	"teagans-web-api/app/services/dtos"
+	"teagans-web-api/app/utilities"
 	"teagans-web-api/app/models"
+	"errors"
 )
 
 type TaskService struct {
@@ -24,6 +26,11 @@ func(this TaskService) CreateTask(dto dtos.TaskInDTO) (dtos.TaskOutDTO, dtos.Err
 	// unsure if TaskCategory is loadable before saved
 	if taskCategory.UserID != this.currentUser.ID && !this.validateUserHasAccess(enums.SUPERADMIN) {
 		return dtos.TaskOutDTO{}, dtos.AccessDeniedError(false)
+	}
+
+	// validate detailJson
+	if !utilities.IsJson(this.task.DetailJson) {
+		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(errors.New("Invalid JSON passed in detailJson field"), 0, false)
 	}
 
 	if createErr := this.db.Create(&this.task).Error; createErr != nil {
@@ -66,18 +73,67 @@ func(this TaskService) UpdateTask(data map[string]interface{}, taskIdStr string)
 	}
 
 	// sanitize detailHtml if it exists
-	html, ok := taskMap["DetailHtml"]
-	if ok {
+	html, htmlPresent := taskMap["DetailHtml"]
+	if htmlPresent {
 		htmlStr, _ := html.(string)
 		sanitizedHtml := bluemonday.UGCPolicy().Sanitize(htmlStr)
 		taskMap["DetailHtml"] = sanitizedHtml
 	}
+	// validate detailJson if it exists
+	jsn, jsnPresent := taskMap["DetailJson"]
+	if jsnPresent {
+		jsnStr, _ := jsn.(string)
+		if !utilities.IsJson(jsnStr) {
+			return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(errors.New("Invalid JSON passed in detailJson field"), 0, false)
+		}
+	}
 
-	if updateErr := this.db.Model(&this.task).Omit("task_category_id, TaskCategory").Updates(taskMap).Error; updateErr != nil {
+	if updateErr := this.db.Model(&this.task).Omit("id, task_category_id, TaskCategory").Updates(taskMap).Error; updateErr != nil {
 		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(updateErr, 0, false)
 	}
 
 	rv := mappers.MapTaskToTaskOutDTO(this.task)
+
+	return rv, dtos.ErrorDTO{}
+}
+
+func(this TaskService) UpdateTasks(data dtos.TaskListInDTO) (dtos.TaskListOutDTO, dtos.ErrorDTO) {
+	tx := this.db.Begin()
+	var arr []dtos.TaskOutDTO
+	for _, tsk := range data.Tasks {
+		// first get ID from the task data
+		var id interface{}
+		var idOk bool
+		id, idOk = tsk["id"]
+		if !idOk {
+			id, idOk = tsk["Id"]
+		}
+		if !idOk {
+			tx.Rollback()
+			return dtos.TaskListOutDTO{}, dtos.CreateErrorDTO(errors.New("ID field missing!"), 0, false)
+		}
+		idStr, isStr := id.(string)
+		if !isStr {
+			tx.Rollback()
+			return dtos.TaskListOutDTO{}, dtos.CreateErrorDTO(errors.New("ID is of incorrect type"), 0, false)
+		}
+
+		tskRes, updateErr := this.UpdateTask(tsk, idStr)
+		if updateErr.Exists() {
+			tx.Rollback()
+			return dtos.TaskListOutDTO{}, updateErr
+		}
+
+		arr = append(arr, tskRes)
+	}
+
+	rv := dtos.TaskListOutDTO{
+		Tasks: arr,
+	}
+
+	if cErr := tx.Commit().Error; cErr != nil {
+		return dtos.TaskListOutDTO{}, dtos.CreateErrorDTO(cErr, 0, false)
+	}
 
 	return rv, dtos.ErrorDTO{}
 }

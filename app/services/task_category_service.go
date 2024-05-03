@@ -8,6 +8,7 @@ import (
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/models"
 	"strings"
+	"errors"
 )
 
 type TaskCategoryService struct {
@@ -54,11 +55,52 @@ func(this TaskCategoryService) UpdateTaskCategory(data map[string]interface{}, t
 	}
 
 	// update task category
-	if updateErr := this.db.Model(&this.taskCategory).Omit("user_id").Updates(tcMap).Error; updateErr != nil {
+	if updateErr := this.db.Model(&this.taskCategory).Omit("id, user_id").Updates(tcMap).Error; updateErr != nil {
 		return dtos.TaskCategoryOutDTO{}, dtos.CreateErrorDTO(updateErr, 0, false)
 	}
 
 	rv := mappers.MapTaskCategoryToTaskCategoryOutDTO(this.taskCategory)
+
+	return rv, dtos.ErrorDTO{}
+}
+
+func(this TaskCategoryService) UpdateTaskCategories(data dtos.TaskCategoryListInDTO) (dtos.TaskCategoryListOutDTO, dtos.ErrorDTO) {
+	tx := this.db.Begin()
+	var arr []dtos.TaskCategoryOutDTO
+	for _, cat := range data.TaskCategories {
+		// first get ID from the task data
+		var id interface{}
+		var idOk bool
+		id, idOk = cat["id"]
+		if !idOk {
+			id, idOk = cat["Id"]
+		}
+		if !idOk {
+			tx.Rollback()
+			return dtos.TaskCategoryListOutDTO{}, dtos.CreateErrorDTO(errors.New("ID field missing!"), 0, false)
+		}
+		idStr, isStr := id.(string)
+		if !isStr {
+			tx.Rollback()
+			return dtos.TaskCategoryListOutDTO{}, dtos.CreateErrorDTO(errors.New("ID is of incorrect type"), 0, false)
+		}
+
+		catRes, updateErr := this.UpdateTaskCategory(cat, idStr)
+		if updateErr.Exists() {
+			tx.Rollback()
+			return dtos.TaskCategoryListOutDTO{}, updateErr
+		}
+
+		arr = append(arr, catRes)
+	}
+
+	rv := dtos.TaskCategoryListOutDTO{
+		TaskCategories: arr,
+	}
+
+	if cErr := tx.Commit().Error; cErr != nil {
+		return dtos.TaskCategoryListOutDTO{}, dtos.CreateErrorDTO(cErr, 0, false)
+	}
 
 	return rv, dtos.ErrorDTO{}
 }
@@ -80,14 +122,14 @@ func(this TaskCategoryService) DeleteTaskCategory(taskCategoryIdStr string) dtos
 	return dtos.ErrorDTO{}
 }
 
-func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr, statusQuery string, getCleared bool) (dtos.TaskListDTO, dtos.ErrorDTO) {
+func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr, statusQuery string, getCleared bool) (dtos.TaskListOutDTO, dtos.ErrorDTO) {
 	err := this.setTaskCategory(categoryIdStr)
 	if err != nil {
-		return dtos.TaskListDTO{}, dtos.CreateErrorDTO(err, 0, false)
+		return dtos.TaskListOutDTO{}, dtos.CreateErrorDTO(err, 0, false)
 	}
 
 	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.taskCategory.UserID {
-		return dtos.TaskListDTO{}, dtos.AccessDeniedError(false)
+		return dtos.TaskListOutDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	statusList := genStatusList(statusQuery)
@@ -95,7 +137,7 @@ func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr, statusQuery s
 	var tasks []models.Task
 	this.db.Where("task_category_id = ? AND cleared = ? AND status IN ?", this.taskCategory.ID, getCleared, statusList).Order("position asc, priority desc").Find(&tasks)
 
-	rv := dtos.TaskListDTO{
+	rv := dtos.TaskListOutDTO{
 		Tasks: mappers.MapTasksToTaskOutDTOs(tasks),
 	}
 

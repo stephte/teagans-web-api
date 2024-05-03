@@ -24,6 +24,10 @@ type TaskOutDTO struct {
 	TaskNumber			int64				`json:"taskNumber"`
 }
 
-type TaskListDTO struct {
+type TaskListOutDTO struct {
 	Tasks	[]TaskOutDTO	`json:"tasks"`
+}
+
+type TaskListInDTO struct {
+	Tasks	[]map[string]interface{}	`json:"tasks"`
 }

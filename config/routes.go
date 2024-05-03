@@ -71,6 +71,8 @@ func(this *Router) defineRoutes() {
 		r.Use(middle.ValidateJWT)
 
 		r.Post("/", controllers.CreateTaskCategory)
+		r.Post("/update-categories", controllers.UpdateTaskCategories)
+
 		r.Route("/{categoryId}", func(r chi.Router) {
 			r.Patch("/", controllers.UpdateTaskCategory)
 			r.Delete("/", controllers.DeleteTaskCategory)
@@ -83,6 +85,8 @@ func(this *Router) defineRoutes() {
 		r.Use(middle.ValidateJWT)
 
 		r.Post("/", controllers.CreateTask)
+		r.Post("/update-tasks", controllers.UpdateTasks)
+
 		r.Route("/{taskId}", func(r chi.Router) {
 			r.Get("/", controllers.GetTask)
 			r.Patch("/", controllers.UpdateTask)
