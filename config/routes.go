@@ -83,6 +83,8 @@ func(this *Router) defineRoutes() {
 		r.Use(middle.ValidateJWT)
 
 		r.Post("/", controllers.CreateTask)
+		r.Post("/update-tasks", controllers.UpdateTasks)
+
 		r.Route("/{taskId}", func(r chi.Router) {
 			r.Get("/", controllers.GetTask)
 			r.Patch("/", controllers.UpdateTask)

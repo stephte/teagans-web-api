@@ -80,14 +80,14 @@ func(this TaskCategoryService) DeleteTaskCategory(taskCategoryIdStr string) dtos
 	return dtos.ErrorDTO{}
 }
 
-func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr, statusQuery string, getCleared bool) (dtos.TaskListDTO, dtos.ErrorDTO) {
+func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr, statusQuery string, getCleared bool) (dtos.TaskListOutDTO, dtos.ErrorDTO) {
 	err := this.setTaskCategory(categoryIdStr)
 	if err != nil {
-		return dtos.TaskListDTO{}, dtos.CreateErrorDTO(err, 0, false)
+		return dtos.TaskListOutDTO{}, dtos.CreateErrorDTO(err, 0, false)
 	}
 
 	if !this.validateUserHasAccess(enums.SUPERADMIN) && this.currentUser.ID != this.taskCategory.UserID {
-		return dtos.TaskListDTO{}, dtos.AccessDeniedError(false)
+		return dtos.TaskListOutDTO{}, dtos.AccessDeniedError(false)
 	}
 
 	statusList := genStatusList(statusQuery)
@@ -95,7 +95,7 @@ func(this TaskCategoryService) GetTaskCategoryTasks(categoryIdStr, statusQuery s
 	var tasks []models.Task
 	this.db.Where("task_category_id = ? AND cleared = ? AND status IN ?", this.taskCategory.ID, getCleared, statusList).Order("position asc, priority desc").Find(&tasks)
 
-	rv := dtos.TaskListDTO{
+	rv := dtos.TaskListOutDTO{
 		Tasks: mappers.MapTasksToTaskOutDTOs(tasks),
 	}
 
