@@ -52,6 +52,26 @@ func UpdateTaskCategory(w http.ResponseWriter, r *http.Request) {
 	httpUtils.RenderJSON(w, tcDTO, 200)
 }
 
+func UpdateTaskCategories(w http.ResponseWriter, r *http.Request) {
+	var data dtos.TaskCategoryListInDTO
+	bindErr := json.NewDecoder(r.Body).Decode(&data)
+	if bindErr != nil {
+		httpUtils.RenderErrorJSON(w, r, dtos.CreateErrorDTO(bindErr, 0, false))
+		return
+	}
+
+	baseService := r.Context().Value("BaseService").(*services.BaseService)
+	service := services.TaskCategoryService{BaseService: baseService}
+
+	taskCategoryListOutDTO, errDTO := service.UpdateTaskCategories(data)
+	if errDTO.Exists() {
+		httpUtils.RenderErrorJSON(w, r, errDTO)
+		return
+	}
+
+	httpUtils.RenderJSON(w, taskCategoryListOutDTO, 200)
+}
+
 func DeleteTaskCategory(w http.ResponseWriter, r *http.Request) {
 	categoryIdStr := chi.URLParam(r, "categoryId")
 

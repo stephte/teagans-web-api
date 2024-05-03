@@ -16,6 +16,10 @@ type TaskCategoryOutDTO struct {
 	TaskCategoryInDTO
 }
 
-type TaskCategoryListDTO struct {
+type TaskCategoryListOutDTO struct {
 	TaskCategories	[]TaskCategoryOutDTO	`json:"taskCategories"`
+}
+
+type TaskCategoryListInDTO struct {
+	TaskCategories	[]map[string]interface{}	`json:"taskCategories"`
 }

@@ -71,6 +71,8 @@ func(this *Router) defineRoutes() {
 		r.Use(middle.ValidateJWT)
 
 		r.Post("/", controllers.CreateTaskCategory)
+		r.Post("/update-categories", controllers.UpdateTaskCategories)
+
 		r.Route("/{categoryId}", func(r chi.Router) {
 			r.Patch("/", controllers.UpdateTaskCategory)
 			r.Delete("/", controllers.DeleteTaskCategory)
