@@ -1,8 +1,7 @@
 package intrface
 
-import(
+import (
 	"teagans-web-api/app/utilities/enums"
-	"teagans-web-api/app/utilities/uuid"
 	"teagans-web-api/app/utilities"
 	"reflect"
 	"strings"
@@ -49,9 +48,17 @@ func ValidateMapWithStruct(mapToValidate map[string]interface{}, strct interface
 
 			typeMatch = typeMatch || reflect.TypeOf(value) == structField.Type
 			if !typeMatch {
+				strTypes := []string{"uuid.UUID"}
+
 				if IsNumberType(structField.Type.String()) {
 					typeMatch = IsNumberType(GetType(value))
-				} else if structField.Type == reflect.TypeOf(uuid.New()) {
+				} else if structField.Type.String() == "*time.Time" {
+					if value != nil {
+						_, typeMatch = value.(string)
+					} else {
+						typeMatch = true
+					}
+				} else if utilities.ArrContains(strTypes, structField.Type.String()) {
 					_, typeMatch = value.(string)
 				}
 			}
