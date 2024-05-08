@@ -21,7 +21,7 @@ type Task struct {
 	Status				enums.TaskStatus
 	Priority			enums.TaskPriority
 	Position			int64
-	DueDate				*time.Time
+	DueDate				*time.Time			`gorm:"type:timestamp;"`
 	Cleared				bool				`gorm:"default:false;"`
 	TaskNumber			int64				`gorm:"uniqueIndex:cattasknumndx;"`
 }
