@@ -19,7 +19,7 @@ func MapTaskInDTOToTask(dto dtos.TaskInDTO) models.Task {
 		Status: taskStatus,
 		Priority: taskPriority,
 		Position: dto.Position,
-		Effort: dto.Effort,
+		DueDate: dto.DueDate,
 		Cleared: dto.Cleared,
 	}
 }
@@ -37,7 +37,7 @@ func MapTaskToTaskOutDTO(task models.Task) dtos.TaskOutDTO {
 			Status: int64(task.Status),
 			Priority: int64(task.Priority),
 			Position: task.Position,
-			Effort: task.Effort,
+			DueDate: task.DueDate,
 			Cleared: task.Cleared,
 		},
 		TaskNumber: task.TaskNumber,

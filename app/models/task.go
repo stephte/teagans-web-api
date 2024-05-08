@@ -4,6 +4,7 @@ import (
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
 	"gorm.io/gorm"
+	"time"
 )
 
 type Task struct {
@@ -20,7 +21,7 @@ type Task struct {
 	Status				enums.TaskStatus
 	Priority			enums.TaskPriority
 	Position			int64
-	Effort				int64
+	DueDate				*time.Time			`gorm:"type:timestamp;"`
 	Cleared				bool				`gorm:"default:false;"`
 	TaskNumber			int64				`gorm:"uniqueIndex:cattasknumndx;"`
 }
