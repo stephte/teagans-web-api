@@ -2,7 +2,7 @@
 
 # Setup
 
-- requires go 1.21 and a running postgres server
+- requires go 1.22 and a running postgres server
 
 - copy ".template.env" into ".env" and update it with appropriate data
 
