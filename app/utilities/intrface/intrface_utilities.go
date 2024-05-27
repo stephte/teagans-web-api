@@ -48,7 +48,7 @@ func ValidateMapWithStruct(mapToValidate map[string]interface{}, strct interface
 
 			typeMatch = typeMatch || reflect.TypeOf(value) == structField.Type
 			if !typeMatch {
-				strTypes := []string{"uuid.UUID", "*time.Time"}
+				strTypes := []string{"uuid.UUID", "*time.Time", "enctypes.EncString"}
 				fieldTypeStr := structField.Type.String()
 
 				// if its a pointer type and the value is nil, allow it

@@ -1,6 +1,7 @@
 package mappers
 
 import (
+	"teagans-web-api/app/utilities/enctypes"
 	"teagans-web-api/app/utilities/enums"
 	"github.com/microcosm-cc/bluemonday"
 	"teagans-web-api/app/services/dtos"
@@ -14,7 +15,7 @@ func MapTaskInDTOToTask(dto dtos.TaskInDTO) models.Task {
 	return models.Task{
 		TaskCategoryID: dto.TaskCategoryID,
 		Title: dto.Title,
-		DetailHtml: bluemonday.UGCPolicy().Sanitize(dto.DetailHtml),
+		DetailHtml: enctypes.EncString((bluemonday.UGCPolicy().Sanitize(string(dto.DetailHtml)))),
 		DetailJson: dto.DetailJson,
 		Status: taskStatus,
 		Priority: taskPriority,

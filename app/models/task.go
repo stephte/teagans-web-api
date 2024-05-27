@@ -1,6 +1,7 @@
 package models
 
 import (
+	"teagans-web-api/app/utilities/enctypes"
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities/uuid"
 	"gorm.io/gorm"
@@ -13,10 +14,10 @@ type Task struct {
 	TaskCategoryID		uuid.UUID			`gorm:"type:uuid;uniqueIndex:cattasknumndx;not null;"`
 	TaskCategory		TaskCategory
 
-	Title				string				`gorm:"default:null;not null;"`
+	Title				enctypes.EncString	`gorm:"default:null;not null;"`
 
-	DetailHtml			string
-	DetailJson			string
+	DetailHtml			enctypes.EncString
+	DetailJson			enctypes.EncString
 
 	Status				enums.TaskStatus
 	Priority			enums.TaskPriority

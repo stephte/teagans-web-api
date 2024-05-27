@@ -29,7 +29,7 @@ func(this TaskService) CreateTask(dto dtos.TaskInDTO) (dtos.TaskOutDTO, dtos.Err
 	}
 
 	// validate detailJson
-	if !utilities.IsJson(this.task.DetailJson) {
+	if !utilities.IsJson(string(this.task.DetailJson)) {
 		return dtos.TaskOutDTO{}, dtos.CreateErrorDTO(errors.New("Invalid JSON passed in detailJson field"), 0, false)
 	}
 
@@ -76,7 +76,7 @@ func(this TaskService) UpdateTask(data map[string]interface{}, taskIdStr string)
 	html, htmlPresent := taskMap["DetailHtml"]
 	if htmlPresent {
 		htmlStr, _ := html.(string)
-		sanitizedHtml := bluemonday.UGCPolicy().Sanitize(htmlStr)
+		sanitizedHtml := bluemonday.UGCPolicy().Sanitize(string(htmlStr))
 		taskMap["DetailHtml"] = sanitizedHtml
 	}
 	// validate detailJson if it exists

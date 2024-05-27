@@ -2,6 +2,7 @@ package config
 
 import (
 	"teagans-web-api/app/models"
+	"teagans-web-api/migrations"
 	"gorm.io/driver/postgres"
 	"github.com/rs/zerolog"
 	"gorm.io/gorm"
@@ -90,6 +91,13 @@ func(this *DBConn) migrate() {
 	if this.verbose {
 		this.logger.Info().Msg("Migrating...")
 	}
+
+	// run any custom migration scripts here
+	err := migrations.EncryptTaskData(this.db)
+	if err != nil {
+		panic(err)
+	}
+
 	// add DB table models here
 	this.db.AutoMigrate(
 		&models.User{},
