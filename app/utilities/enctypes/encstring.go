@@ -20,21 +20,17 @@ func(this *EncString) Scan(value interface{}) error {
 			return nil
 		}
 		// decrypt it
-		if false {
-			ciphertext, err := hex.DecodeString(value)
-			if err != nil {
-				return err
-			}
-
-			rv, err := ciphers.DecryptFromAES(ciphertext)
-			if err != nil {
-				return err
-			}
-
-			*this = EncString(rv)
-		} else {
-			*this = EncString(value)
+		ciphertext, err := hex.DecodeString(value)
+		if err != nil {
+			return err
 		}
+
+		rv, err := ciphers.DecryptFromAES(ciphertext)
+		if err != nil {
+			return err
+		}
+
+		*this = EncString(rv)
 	case []byte:
 		if value == nil {
 			*this = EncString("")

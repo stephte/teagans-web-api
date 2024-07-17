@@ -1,6 +1,7 @@
 package intrface
 
 import (
+	"teagans-web-api/app/utilities/enctypes"
 	"teagans-web-api/app/utilities/enums"
 	"teagans-web-api/app/utilities"
 	"reflect"
@@ -61,7 +62,11 @@ func ValidateMapWithStruct(mapToValidate map[string]interface{}, strct interface
 				} else if IsNumberType(fieldTypeStr) {
 					typeMatch = IsNumberType(GetType(value))
 				} else if utilities.ArrContains(strTypes, fieldTypeStr) {
-					_, typeMatch = value.(string)
+					var strVal string
+					strVal, typeMatch = value.(string)
+					if fieldTypeStr == "enctypes.EncString" {
+						value = enctypes.EncString(strVal)
+					}
 				}
 			}
 
