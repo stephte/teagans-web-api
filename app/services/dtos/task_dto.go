@@ -2,7 +2,6 @@ package dtos
 
 import (
 	"teagans-web-api/app/utilities/uuid"
-	"time"
 )
 
 type TaskInDTO struct {
@@ -14,7 +13,7 @@ type TaskInDTO struct {
 	Status				int64				`json:"status" enum:"TaskStatus"`
 	Priority			int64				`json:"priority" enum:"TaskPriority"`
 	Position			int64				`json:"position"`
-	DueDate				*time.Time			`json:"dueDate"`
+	DueDate				string				`json:"dueDate"`
 	Cleared				bool				`json:"cleared"`
 }
 

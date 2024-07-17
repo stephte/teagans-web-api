@@ -5,11 +5,14 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"teagans-web-api/app/services/dtos"
 	"teagans-web-api/app/models"
+	"time"
 )
 
 func MapTaskInDTOToTask(dto dtos.TaskInDTO) models.Task {
 	taskStatus, _ := enums.NewTaskStatus(dto.Status)
 	taskPriority, _ := enums.NewTaskPriority(dto.Priority)
+	format := "2006-01-02"
+	dd, _ := time.Parse(format, dto.DueDate)
 
 	return models.Task{
 		TaskCategoryID: dto.TaskCategoryID,
@@ -19,12 +22,19 @@ func MapTaskInDTOToTask(dto dtos.TaskInDTO) models.Task {
 		Status: taskStatus,
 		Priority: taskPriority,
 		Position: dto.Position,
-		DueDate: dto.DueDate,
+		DueDate: &dd,
 		Cleared: dto.Cleared,
 	}
 }
 
 func MapTaskToTaskOutDTO(task models.Task) dtos.TaskOutDTO {
+	var dd string
+	if task.DueDate == nil {
+		dd = ""
+	} else {
+		format := "2006-01-02"
+		dd = task.DueDate.Format(format)
+	}
 	return dtos.TaskOutDTO{
 		BaseDTO: dtos.BaseDTO{
 			ID: task.ID,
@@ -37,7 +47,7 @@ func MapTaskToTaskOutDTO(task models.Task) dtos.TaskOutDTO {
 			Status: int64(task.Status),
 			Priority: int64(task.Priority),
 			Position: task.Position,
-			DueDate: task.DueDate,
+			DueDate: dd,
 			Cleared: task.Cleared,
 		},
 		TaskNumber: task.TaskNumber,
